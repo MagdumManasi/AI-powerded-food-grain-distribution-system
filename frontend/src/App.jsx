@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Beneficiaries from './pages/Beneficiaries';
@@ -38,41 +39,46 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Public Landing Page */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/landing" element={<LandingPage />} />
+
+          {/* Authentication Route */}
           <Route path="/login" element={<Login />} />
 
+          {/* Authenticated Dashboard Workspaces */}
           <Route
-            path="/"
             element={
               <ProtectedRoute>
                 <Layout />
               </ProtectedRoute>
             }
           >
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="hierarchy" element={<HierarchyExplorer />} />
-            <Route path="citizen-portal" element={<BeneficiaryPortal />} />
-            <Route path="warehouse-ops" element={<WarehouseConsole />} />
-            <Route path="transporter-ops" element={<TransporterConsole />} />
-            <Route path="complaints" element={<Complaints />} />
-            <Route path="beneficiaries" element={<Beneficiaries />} />
-            <Route path="beneficiaries/:id" element={<BeneficiaryDetail />} />
-            <Route path="ration-shops" element={<RationShops />} />
-            <Route path="ration-shops/:id" element={<RationShopDetail />} />
-            <Route path="godowns" element={<Godowns />} />
-            <Route path="inventory" element={<Inventory />} />
-            <Route path="dispatch" element={<Dispatch />} />
-            <Route path="receipts" element={<Receipts />} />
-            <Route path="distributions" element={<Distributions />} />
-            <Route path="alerts" element={<Alerts />} />
-            <Route path="alerts/:id" element={<AlertDetail />} />
-            <Route path="audit" element={<AiAudit />} />
-            <Route path="ai-assistant" element={<AiAssistant />} />
-            <Route path="documents" element={<Documents />} />
-            <Route path="audit-logs" element={<AuditLogs />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/hierarchy" element={<HierarchyExplorer />} />
+            <Route path="/citizen-portal" element={<BeneficiaryPortal />} />
+            <Route path="/warehouse-ops" element={<WarehouseConsole />} />
+            <Route path="/transporter-ops" element={<TransporterConsole />} />
+            <Route path="/complaints" element={<Complaints />} />
+            <Route path="/beneficiaries" element={<Beneficiaries />} />
+            <Route path="/beneficiaries/:id" element={<BeneficiaryDetail />} />
+            <Route path="/ration-shops" element={<RationShops />} />
+            <Route path="/ration-shops/:id" element={<RationShopDetail />} />
+            <Route path="/godowns" element={<Godowns />} />
+            <Route path="/inventory" element={<Inventory />} />
+            <Route path="/dispatch" element={<Dispatch />} />
+            <Route path="/receipts" element={<Receipts />} />
+            <Route path="/distributions" element={<Distributions />} />
+            <Route path="/alerts" element={<Alerts />} />
+            <Route path="/alerts/:id" element={<AlertDetail />} />
+            <Route path="/audit" element={<AiAudit />} />
+            <Route path="/ai-assistant" element={<AiAssistant />} />
+            <Route path="/documents" element={<Documents />} />
+            <Route path="/audit-logs" element={<AuditLogs />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          {/* Safe Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

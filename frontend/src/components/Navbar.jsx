@@ -96,6 +96,15 @@ const Navbar = () => {
 
         {/* Right Nav Options */}
         <div className="flex items-center gap-2.5">
+          {/* Link to Public Landing Page */}
+          <Link
+            to="/"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-700 bg-slate-50 rounded-lg border border-slate-200 hover:bg-slate-100 transition"
+            title="View Public Landing Page"
+          >
+            <span>🌐 Public Site</span>
+          </Link>
+
           {/* Link to Hierarchy Explorer */}
           <Link
             to="/hierarchy"

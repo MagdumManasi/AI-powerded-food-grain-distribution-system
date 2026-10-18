@@ -55,22 +55,23 @@ The application provides 7 canonical role profiles with one-click instant authen
 ### 5. Architectural Implementation
 - **Mock Store (`frontend/src/services/mock/mockStore.js`):** Stateful in-memory repository with `localStorage` persistence, reactive subscriber pattern, stock validation, and cryptographic SHA-256 audit logging.
 - **Unified Boundary (`frontend/src/services/dataService.js`):** Clean abstraction layer decoupling all React components from backend transport. Supports seamless switching between mock mode and Spring Boot REST API.
-- **All 18 Navigable Screens Completed & Subscribed:**
-  1. `Login.jsx`: 7 demo user logins with instant bypass.
-  2. `Dashboard.jsx`: Dynamic role-specific executive dashboards.
-  3. `HierarchyExplorer.jsx`: 6-tier administrative tree & physical grain movement pipeline.
-  4. `BeneficiaryPortal.jsx`: Citizen portal for Tukaram Shinde (Bedag) with digital passbook & grievance filing.
-  5. `WarehouseConsole.jsx`: Sangli Central Godown console with live dispatch generation modal.
-  6. `TransporterConsole.jsx`: Carrier fleet console for truck `MH-10-AZ-5542` with trip milestones.
-  7. `Complaints.jsx`: Citizen grievances for Bedag & Belanki with show-cause notices.
-  8. `Beneficiaries.jsx` & `BeneficiaryDetail.jsx`: Sangli cardholders dossier & quota tracking.
-  9. `RationShops.jsx` & `RationShopDetail.jsx`: Fair Price Shop registry & risk scoring.
-  10. `Godowns.jsx`: Bulk depot capacity & stock ledgers.
-  11. `Inventory.jsx`: Real-time stock levels across warehouses and shops.
-  12. `Dispatch.jsx`: Outbound waybill ledger & e-waybill generation.
-  13. `Receipts.jsx`: Weighbridge receipt reconciliation & automated discrepancy alerts.
-  14. `Distributions.jsx`: Point-of-sale grain issue transactions with Aadhaar biometric verification.
-  15. `Alerts.jsx` & `AlertDetail.jsx`: AI anomaly inspection & human-in-the-loop review.
-  16. `AiAudit.jsx`: AI-assisted shop audit agent with forensic inspection report.
-  17. `AiAssistant.jsx`: Grounded RAG policy chat assistant with statutory citations.
-  18. `Documents.jsx` & `AuditLogs.jsx`: Statutory policy indexing & tamper-evident audit trail.
+- **All 19 Navigable Screens Completed & Subscribed:**
+  1. `LandingPage.jsx`: Public government portal with human-centered Maharashtra farmer hero, compact statistics, vision card, 5-step movement workflow, platform features, impact metrics, and 1-click role login portal.
+  2. `Login.jsx`: 7 demo user logins with instant bypass.
+  3. `Dashboard.jsx`: Dynamic role-specific executive dashboards.
+  4. `HierarchyExplorer.jsx`: 6-tier administrative tree & physical grain movement pipeline.
+  5. `BeneficiaryPortal.jsx`: Citizen portal for Tukaram Shinde (Bedag) with digital passbook & grievance filing.
+  6. `WarehouseConsole.jsx`: Sangli Central Godown console with live dispatch generation modal.
+  7. `TransporterConsole.jsx`: Carrier fleet console for truck `MH-10-AZ-5542` with trip milestones.
+  8. `Complaints.jsx`: Citizen grievances for Bedag & Belanki with show-cause notices.
+  9. `Beneficiaries.jsx` & `BeneficiaryDetail.jsx`: Sangli cardholders dossier & quota tracking.
+  10. `RationShops.jsx` & `RationShopDetail.jsx`: Fair Price Shop registry & risk scoring.
+  11. `Godowns.jsx`: Bulk depot capacity & stock ledgers.
+  12. `Inventory.jsx`: Real-time stock levels across warehouses and shops.
+  13. `Dispatch.jsx`: Outbound waybill ledger & e-waybill generation.
+  14. `Receipts.jsx`: Weighbridge receipt reconciliation & automated discrepancy alerts.
+  15. `Distributions.jsx`: Point-of-sale grain issue transactions with Aadhaar biometric verification.
+  16. `Alerts.jsx` & `AlertDetail.jsx`: AI anomaly inspection & human-in-the-loop review.
+  17. `AiAudit.jsx`: AI-assisted shop audit agent with forensic inspection report.
+  18. `AiAssistant.jsx`: Grounded RAG policy chat assistant with statutory citations.
+  19. `Documents.jsx` & `AuditLogs.jsx`: Statutory policy indexing & tamper-evident audit trail.

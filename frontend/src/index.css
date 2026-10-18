@@ -23,6 +23,10 @@
   --text-muted: #64748b;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   margin: 0;
   padding: 0;
