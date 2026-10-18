@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/client';
 import StatCard from '../components/StatCard';
+import { useAuth } from '../context/AuthContext';
 import {
   Users,
   Store,
@@ -12,7 +13,12 @@ import {
   PackageX,
   Sparkles,
   ArrowRight,
-  ShieldAlert
+  ShieldAlert,
+  Truck,
+  CheckCircle2,
+  PackageCheck,
+  ShieldCheck,
+  Eye
 } from 'lucide-react';
 import {
   BarChart,
@@ -30,17 +36,28 @@ import {
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
+  const { user } = useAuth();
+  const role = user?.role || 'OFFICER';
+
   const [data, setData] = useState(null);
+  const [dispatches, setDispatches] = useState([]);
+  const [receipts, setReceipts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchDashboard();
+    fetchDashboardData();
   }, []);
 
-  const fetchDashboard = async () => {
+  const fetchDashboardData = async () => {
     try {
-      const res = await api.get('/dashboard/summary');
-      setData(res.data.data);
+      const [sumRes, dispRes, rcptRes] = await Promise.all([
+        api.get('/dashboard/summary'),
+        api.get('/dispatch'),
+        api.get('/receipts'),
+      ]);
+      setData(sumRes.data.data);
+      setDispatches(dispRes.data.data || []);
+      setReceipts(rcptRes.data.data || []);
     } catch (err) {
       console.error('Error fetching dashboard summary:', err);
     } finally {
@@ -61,25 +78,53 @@ const Dashboard = () => {
     { name: 'Wheat Stock (KG)', value: data?.totalWheatStockKg || 0, color: '#f59e0b' },
   ];
 
+  // Map receipts by dispatchId for instant shortage calculation
+  const receiptsMap = {};
+  receipts.forEach((r) => {
+    receiptsMap[r.dispatchId] = r;
+  });
+
   return (
     <div className="space-y-6 animate-fade-in">
       
-      {/* Page Header */}
+      {/* Role-Specific Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Public Distribution Intelligence Dashboard</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+              {role === 'OFFICER' && 'District Supply Officer (DSO) Monitoring Console'}
+              {role === 'FPS_OWNER' && 'Fair Price Shop Point-of-Sale Console (FPS102)'}
+              {role === 'TRANSPORTER' && 'Logistics & Fleet Transit Operations'}
+              {role === 'AUDITOR' && 'State Compliance & Forensic Audit Console'}
+              {role === 'ADMIN' && 'Statewide Public Distribution Executive Overview'}
+            </h1>
+            <span className="badge badge-success text-[10px]">{role} ACCESS</span>
+          </div>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Real-time food grain inventory monitoring, anomaly detection, and AI-assisted governance
+            {role === 'OFFICER' && 'Tracking bulk allocations from central godowns down to lowest tier ration shops (FPS) with leakage detection.'}
+            {role === 'FPS_OWNER' && 'Manage grain balances, confirm incoming weighbridge shipments, and disburse statutory quotas.'}
+            {role === 'TRANSPORTER' && 'Real-time vehicle manifests, waybill routes, and delivery receipt reconciliation.'}
+            {role === 'AUDITOR' && 'Independent oversight of transit shortages, volume anomalies, and PDS circular compliance.'}
+            {role === 'ADMIN' && 'Master control over statewide grain buffers, allocations, dealers, and AI anomaly thresholds.'}
           </p>
         </div>
+
         <div className="flex items-center gap-2">
-          <Link to="/audit" className="btn btn-primary text-xs shadow">
-            <Sparkles size={14} />
-            <span>Launch AI Audit</span>
-          </Link>
+          {(role === 'OFFICER' || role === 'ADMIN' || role === 'AUDITOR') && (
+            <Link to="/audit" className="btn btn-primary text-xs shadow">
+              <Sparkles size={14} className="text-amber-300" />
+              <span>Launch AI Audit</span>
+            </Link>
+          )}
+          {role === 'FPS_OWNER' && (
+            <Link to="/distributions" className="btn btn-primary text-xs shadow">
+              <PackageCheck size={14} />
+              <span>Issue Grain</span>
+            </Link>
+          )}
           <Link to="/alerts" className="btn btn-secondary text-xs">
             <AlertTriangle size={14} className="text-amber-600" />
-            <span>View Alerts ({data?.openAlerts || 0})</span>
+            <span>Alerts ({data?.openAlerts || 0})</span>
           </Link>
         </div>
       </div>
@@ -120,14 +165,14 @@ const Dashboard = () => {
         <StatCard
           title="Ration Shops (FPS)"
           value={data?.totalRationShops || 0}
-          subtitle="Active fair price outlets"
+          subtitle="Outlets under monitoring"
           icon={Store}
           color="emerald"
         />
         <StatCard
           title="Central Godowns"
           value={data?.totalGodowns || 0}
-          subtitle="Regional grain buffers"
+          subtitle="Regional buffer facilities"
           icon={Warehouse}
           color="sky"
         />
@@ -140,6 +185,108 @@ const Dashboard = () => {
           alert={data?.openAlerts > 0}
         />
       </div>
+
+      {/* DISPATCHES TO LOWEST TIER (OFFICER FOCUS: Section Requested by User) */}
+      {(role === 'OFFICER' || role === 'ADMIN' || role === 'AUDITOR') && (
+        <div className="card">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-slate-100">
+            <div>
+              <div className="flex items-center gap-2">
+                <Truck size={18} className="text-emerald-700" />
+                <h2 className="text-base font-extrabold text-slate-900">
+                  Grain Movement: Dispatches to Lowest Outlets (Fair Price Shops)
+                </h2>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Monitoring exact quantities released from Godowns to each Ration Shop with transit weighbridge reconciliation
+              </p>
+            </div>
+            <Link to="/dispatch" className="btn btn-secondary btn-sm">
+              <span>View All Dispatches</span>
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+
+          <div className="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Destination FPS</th>
+                  <th>Source Godown</th>
+                  <th>Waybill #</th>
+                  <th>Grain Commodity</th>
+                  <th>Dispatched (KG)</th>
+                  <th>Received (KG)</th>
+                  <th>Transit Shortage</th>
+                  <th>Vehicle Registration</th>
+                  <th>Delivery Status</th>
+                  <th className="text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dispatches.length === 0 ? (
+                  <tr>
+                    <td colSpan="10" className="text-center py-6 text-slate-400 text-xs">No active dispatch movements.</td>
+                  </tr>
+                ) : (
+                  dispatches.map((d) => {
+                    const rcpt = receiptsMap[d.id];
+                    const receivedQty = rcpt ? rcpt.quantityReceived : (d.status === 'DELIVERED' ? d.quantityDispatched : 'In Transit');
+                    const shortage = rcpt ? rcpt.shortageQuantity : 0.0;
+                    const hasShortage = shortage > 0;
+
+                    return (
+                      <tr key={d.id} className={hasShortage ? 'bg-amber-50/50' : ''}>
+                        <td className="font-extrabold text-emerald-900">
+                          {d.shopName}
+                          <div className="text-[10px] text-slate-400 font-mono">Shop ID: #{d.rationShopId}</div>
+                        </td>
+                        <td className="text-xs font-semibold text-slate-700">{d.godownName}</td>
+                        <td className="font-mono text-xs font-bold text-slate-800">{d.dispatchCode}</td>
+                        <td><span className="badge badge-info">{d.grainTypeName}</span></td>
+                        <td className="font-black text-slate-900 text-sm">
+                          {Number(d.quantityDispatched).toLocaleString()} KG
+                        </td>
+                        <td className="font-bold text-slate-800 text-xs">
+                          {typeof receivedQty === 'number' ? `${Number(receivedQty).toLocaleString()} KG` : receivedQty}
+                        </td>
+                        <td>
+                          {hasShortage ? (
+                            <span className="badge badge-danger flex items-center gap-1 w-max">
+                              <AlertTriangle size={11} />
+                              <span>- {shortage} KG</span>
+                            </span>
+                          ) : (
+                            <span className="badge badge-success">0.0 KG</span>
+                          )}
+                        </td>
+                        <td className="font-mono text-xs text-slate-600">{d.vehicleNumber}</td>
+                        <td>
+                          <span className={`badge ${
+                            d.status === 'DELIVERED'
+                              ? 'badge-success'
+                              : d.status === 'PARTIALLY_RECEIVED'
+                              ? 'badge-danger'
+                              : 'badge-warning'
+                          }`}>
+                            {d.status}
+                          </span>
+                        </td>
+                        <td className="text-right">
+                          <Link to={`/ration-shops/${d.rationShopId}`} className="btn btn-secondary btn-sm">
+                            <Eye size={13} />
+                            <span>Inspect FPS</span>
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Secondary Stock Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -183,7 +330,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-base font-extrabold text-slate-900">Shop-wise Grain Distribution (KG)</h2>
-              <p className="text-xs text-slate-500">Total grain distributed across fair price shops this period</p>
+              <p className="text-xs text-slate-500">Total grain disbursed across lower distribution outlets</p>
             </div>
             <span className="badge badge-info">Monthly Analytics</span>
           </div>
@@ -208,7 +355,7 @@ const Dashboard = () => {
         <div className="card">
           <div className="mb-4">
             <h2 className="text-base font-extrabold text-slate-900">Grain Stock Allocation</h2>
-            <p className="text-xs text-slate-500">Distribution proportion by grain category</p>
+            <p className="text-xs text-slate-500">Buffer proportion across grain types</p>
           </div>
 
           <div className="h-64 w-full flex items-center justify-center">
