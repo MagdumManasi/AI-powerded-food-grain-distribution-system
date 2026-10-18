@@ -13,16 +13,17 @@ export const ROLE_PROFILES = {
     role: 'SUPER_ADMIN',
     name: 'Dr. Sunita Deshmukh, IAS',
     title: 'State Food & Civil Supplies Commissioner',
-    email: 'admin@grainguard.gov.in',
+    email: 'admin.demo@example.com',
     phone: '9876543210',
-    clearanceLevel: 'State Master Command (Apex)',
+    clearanceLevel: 'Apex State Command (Maharashtra)',
     jurisdiction: {
       level: 'STATE',
       state: 'Maharashtra',
+      district: 'All 36 Districts',
+      activeLocalities: 'Sangli District (Miraj Taluka - Bedag & Belanki)',
       districtsCount: 36,
       talukasCount: 358,
       fpsCount: 52400,
-      beneficiariesCount: '7.02 Crore',
       activeGodowns: 420,
     },
     badgeColor: 'emerald',
@@ -30,20 +31,20 @@ export const ROLE_PROFILES = {
   },
   DISTRICT_OFFICER: {
     role: 'DISTRICT_OFFICER',
-    name: 'Officer Rajesh Verma',
-    title: 'District Supply Officer (DSO)',
-    email: 'officer@grainguard.gov.in',
+    name: 'Anand Kulkarni',
+    title: 'District Supply Officer (DSO, Sangli)',
+    email: 'officer.demo@example.com',
     phone: '9876543211',
     clearanceLevel: 'District Administration Clearance',
     jurisdiction: {
       level: 'DISTRICT',
       state: 'Maharashtra',
-      district: 'Pune',
-      talukasCount: 14,
-      villagesCount: 1860,
-      fpsCount: 420,
-      beneficiariesCount: '28.4 Lakh',
-      activeGodowns: 4,
+      district: 'Sangli',
+      talukasCount: 10,
+      monitoredTaluka: 'Miraj',
+      monitoredVillages: 'Bedag & Belanki',
+      fpsCount: 1480,
+      activeGodowns: 6,
     },
     badgeColor: 'emerald',
     icon: '👮',
@@ -51,38 +52,38 @@ export const ROLE_PROFILES = {
   WAREHOUSE_MANAGER: {
     role: 'WAREHOUSE_MANAGER',
     name: 'Santosh Gaikwad',
-    title: 'Godown Depot Manager',
-    email: 'warehouse@grainguard.gov.in',
+    title: 'Central Godown Superintendent',
+    email: 'warehouse.demo@example.com',
     phone: '9822011244',
-    clearanceLevel: 'Taluka Grain Depot Clearance',
+    clearanceLevel: 'Warehouse & Grain Depot Clearance',
     jurisdiction: {
-      level: 'TALUKA_GODOWN',
+      level: 'WAREHOUSE',
       state: 'Maharashtra',
-      district: 'Pune',
-      taluka: 'Haveli',
-      godownCode: 'GOD-101',
-      godownName: 'Central Grain Storage Godown #1',
+      district: 'Sangli',
+      taluka: 'Miraj',
+      warehouseCode: 'WH-SAN-001',
+      warehouseName: 'Sangli Central Grain Godown #1',
       storageCapacityKg: 100000,
-      currentStockKg: 75000,
-      linkedShopsCount: 42,
+      currentStockKg: 78500,
+      linkedShopsCount: 28,
     },
     badgeColor: 'sky',
     icon: '🏭',
   },
   TRANSPORTER: {
     role: 'TRANSPORTER',
-    name: 'Vikram Singh',
+    name: 'Arjun Patil',
     title: 'PDS Fleet Logistics Operator',
-    email: 'transporter@grainguard.gov.in',
+    email: 'transporter.demo@example.com',
     phone: '9822011223',
-    clearanceLevel: 'Logistics & Transit Clearance',
+    clearanceLevel: 'Transit Logistics & Fleet Telematics',
     jurisdiction: {
       level: 'TRANSIT',
-      company: 'Food Logistics Corp (FLC)',
-      vehicleNumber: 'MH-12-PQ-9988',
-      vehicleType: '16-Wheeler Heavy Commercial Vehicle',
-      assignedRoute: 'Central Godown #1 -> Haveli Taluka FPS Cluster',
-      activeWaybill: 'DISP-1002',
+      company: 'Krishna Valley Agro Logistics',
+      vehicleNumber: 'MH-10-AZ-5542',
+      vehicleType: '16-Wheeler Commercial Carrier',
+      assignedRoute: 'Sangli Central Godown (WH-SAN-001) -> Bedag & Belanki FPS Cluster',
+      activeWaybill: 'DISP-SAN-1002',
     },
     badgeColor: 'amber',
     icon: '🚚',
@@ -91,20 +92,20 @@ export const ROLE_PROFILES = {
     role: 'FPS_OWNER',
     name: 'Suresh Patil',
     title: 'Fair Price Shop Licensee (Dealer)',
-    email: 'fps102@grainguard.gov.in',
+    email: 'fps.demo@example.com',
     phone: '9876543212',
-    clearanceLevel: 'Village Point-of-Sale (e-PoS) Terminal',
+    clearanceLevel: 'Village e-PoS Point-of-Sale Terminal',
     jurisdiction: {
       level: 'FPS',
       state: 'Maharashtra',
-      district: 'Pune',
-      taluka: 'Haveli',
-      village: 'Hadapsar',
-      shopCode: 'FPS102',
-      shopName: 'Saraswati Fair Price Store',
-      address: '45 Market Yard, Hadapsar',
-      enrolledRationCards: 480,
-      status: 'UNDER_REVIEW', // flagged in scenario
+      district: 'Sangli',
+      taluka: 'Miraj',
+      village: 'Bedag',
+      shopCode: 'FPS-BED-001',
+      shopName: 'Bedag Seva Fair Price Store #1',
+      address: 'Main Bazaar Road, Near Gram Panchayat, Bedag (416410)',
+      enrolledRationCards: 420,
+      status: 'UNDER_REVIEW', // Discrepancy scenario
       riskScore: 75.0,
     },
     badgeColor: 'purple',
@@ -112,22 +113,22 @@ export const ROLE_PROFILES = {
   },
   BENEFICIARY: {
     role: 'BENEFICIARY',
-    name: 'Ramesh Kumar',
-    title: 'NFSA Ration Card Holder',
-    email: 'ramesh.kumar@beneficiary.gov.in',
+    name: 'Tukaram Shinde',
+    title: 'NFSA Antyodaya Ration Cardholder',
+    email: 'beneficiary.demo@example.com',
     phone: '9876543299',
     clearanceLevel: 'Citizen Beneficiary Passbook',
     jurisdiction: {
       level: 'CITIZEN',
       state: 'Maharashtra',
-      district: 'Pune',
-      taluka: 'Haveli',
-      village: 'Hadapsar',
-      rationCardNumber: 'RC-AAY-889901',
+      district: 'Sangli',
+      taluka: 'Miraj',
+      village: 'Bedag',
+      rationCardNumber: 'RC-SAN-AAY-1001',
       scheme: 'Antyodaya Anna Yojana (AAY)',
       familyMembersCount: 4,
-      assignedShopCode: 'FPS102',
-      assignedShopName: 'Saraswati Fair Price Store',
+      assignedShopCode: 'FPS-BED-001',
+      assignedShopName: 'Bedag Seva Fair Price Store #1',
       monthlyEntitlement: '35 KG Grain (20 KG Rice + 15 KG Wheat)',
     },
     badgeColor: 'green',
@@ -135,33 +136,50 @@ export const ROLE_PROFILES = {
   },
   AUDITOR: {
     role: 'AUDITOR',
-    name: 'Senior Auditor Priya Nair',
-    title: 'Vigilance & Statutory Compliance Auditor',
-    email: 'auditor@grainguard.gov.in',
+    name: 'Priya Nair',
+    title: 'Senior Statutory & Vigilance Auditor',
+    email: 'auditor.demo@example.com',
     phone: '9876543214',
     clearanceLevel: 'Independent Forensic Inspection Audit',
     jurisdiction: {
-      level: 'STATE_AUDIT',
+      level: 'AUDIT',
       state: 'Maharashtra',
-      commission: 'State Food Commission & Vigilance Cell',
-      inspectionRadius: 'All 36 Districts & Buffer Silos',
-      flaggedCasesCount: 14,
+      commission: 'State Food Commission Vigilance Directorate',
+      inspectionRadius: 'Sangli District Grain Corridor',
+      flaggedCasesCount: 3,
     },
     badgeColor: 'rose',
     icon: '⚖️',
   },
 };
 
-// Map backend legacy role strings (e.g. ADMIN, OFFICER) to standardized 7 roles
-export const normalizeRole = (backendRole, email = '') => {
-  if (!backendRole) return ROLES.DISTRICT_OFFICER;
-  const upper = backendRole.toUpperCase();
-  if (upper === 'ADMIN' || upper === 'SUPER_ADMIN') return ROLES.SUPER_ADMIN;
-  if (upper === 'OFFICER' || upper === 'DISTRICT_OFFICER') return ROLES.DISTRICT_OFFICER;
-  if (upper === 'WAREHOUSE_MANAGER' || upper === 'GODOWN_MANAGER' || email.includes('warehouse')) return ROLES.WAREHOUSE_MANAGER;
-  if (upper === 'TRANSPORTER') return ROLES.TRANSPORTER;
-  if (upper === 'FPS_OWNER') return ROLES.FPS_OWNER;
-  if (upper === 'BENEFICIARY' || upper === 'CITIZEN' || email.includes('beneficiary')) return ROLES.BENEFICIARY;
-  if (upper === 'AUDITOR') return ROLES.AUDITOR;
+// Map backend or mock email/role strings to standardized 7 roles
+export const normalizeRole = (roleStr, email = '') => {
+  if (!roleStr && !email) return ROLES.DISTRICT_OFFICER;
+  const upperRole = (roleStr || '').toUpperCase();
+  const lowerEmail = (email || '').toLowerCase();
+
+  if (upperRole === 'SUPER_ADMIN' || upperRole === 'ADMIN' || lowerEmail.includes('admin')) {
+    return ROLES.SUPER_ADMIN;
+  }
+  if (upperRole === 'DISTRICT_OFFICER' || upperRole === 'OFFICER' || lowerEmail.includes('officer')) {
+    return ROLES.DISTRICT_OFFICER;
+  }
+  if (upperRole === 'WAREHOUSE_MANAGER' || upperRole === 'GODOWN_MANAGER' || lowerEmail.includes('warehouse')) {
+    return ROLES.WAREHOUSE_MANAGER;
+  }
+  if (upperRole === 'TRANSPORTER' || lowerEmail.includes('transporter')) {
+    return ROLES.TRANSPORTER;
+  }
+  if (upperRole === 'FPS_OWNER' || lowerEmail.includes('fps')) {
+    return ROLES.FPS_OWNER;
+  }
+  if (upperRole === 'BENEFICIARY' || upperRole === 'CITIZEN' || lowerEmail.includes('beneficiary')) {
+    return ROLES.BENEFICIARY;
+  }
+  if (upperRole === 'AUDITOR' || lowerEmail.includes('auditor')) {
+    return ROLES.AUDITOR;
+  }
+
   return ROLES.DISTRICT_OFFICER;
 };

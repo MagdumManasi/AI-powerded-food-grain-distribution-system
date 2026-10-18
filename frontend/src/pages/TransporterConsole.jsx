@@ -1,20 +1,33 @@
 import React, { useState } from 'react';
 import {
   Truck,
-  MapPin,
   Scale,
   CheckCircle2,
-  AlertTriangle,
-  Clock,
-  ShieldCheck,
-  FileText,
   Navigation,
-  ExternalLink,
+  FileText,
+  Clock,
+  AlertTriangle,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { dataService } from '../services/dataService';
 
 const TransporterConsole = () => {
-  const [activeTab, setActiveTab] = useState('ACTIVE_TRIP');
+  const [activeDispatchId, setActiveDispatchId] = useState('DISP-SAN-1009');
+  const [updating, setUpdating] = useState(false);
+  const [updateMsg, setUpdateMsg] = useState('');
+
+  const handleUpdateStatus = async (status, notes) => {
+    setUpdating(true);
+    try {
+      await dataService.updateDispatchStatus(activeDispatchId, status, notes);
+      setUpdateMsg(`Shipment status updated to ${status}!`);
+      setTimeout(() => setUpdateMsg(''), 3000);
+    } catch (err) {
+      alert(err.message || 'Error updating status');
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -23,17 +36,17 @@ const TransporterConsole = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">Logistics & Fleet Transit Operations</h1>
-            <span className="badge badge-warning text-[10px]">VEHICLE: MH-12-PQ-9988</span>
+            <span className="badge badge-warning text-[10px]">VEHICLE: MH-10-AZ-5542</span>
           </div>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Fleet Operator: Food Logistics Corp (FLC) • Driver: Vikram Singh (+91 98220 11223)
+            Operator: Krishna Valley Agro Logistics • Driver: Arjun Patil (+91 98220 11223)
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <Link to="/dispatch" className="btn btn-secondary text-xs">
             <FileText size={14} />
-            <span>All Assigned Waybills</span>
+            <span>Assigned Waybills</span>
           </Link>
           <Link to="/receipts" className="btn btn-primary text-xs shadow">
             <CheckCircle2 size={14} />
@@ -42,18 +55,25 @@ const TransporterConsole = () => {
         </div>
       </div>
 
+      {updateMsg && (
+        <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs flex items-center gap-2">
+          <CheckCircle2 size={16} className="text-emerald-700" />
+          <span>{updateMsg}</span>
+        </div>
+      )}
+
       {/* Vehicle Status Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card">
-          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Assigned Vehicle</div>
-          <div className="text-xl font-mono font-black text-slate-900">MH-12-PQ-9988</div>
-          <div className="text-xs text-emerald-700 font-semibold mt-1">16-Tonne Rigid Truck • GPS Active</div>
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Assigned Carrier</div>
+          <div className="text-xl font-mono font-black text-slate-900">MH-10-AZ-5542</div>
+          <div className="text-xs text-emerald-700 font-semibold mt-1">16-Tonne Commercial Truck • GPS Active</div>
         </div>
 
         <div className="card">
-          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Active Waybill</div>
-          <div className="text-xl font-mono font-black text-emerald-800">DISP-1002</div>
-          <div className="text-xs text-slate-500 mt-1">Central Godown #1 ➔ FPS102</div>
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Flagged Waybill</div>
+          <div className="text-xl font-mono font-black text-emerald-800">DISP-SAN-1002</div>
+          <div className="text-xs text-slate-500 mt-1">WH-SAN-001 ➔ Bedag Seva Store</div>
         </div>
 
         <div className="card">
@@ -77,14 +97,15 @@ const TransporterConsole = () => {
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <Navigation size={18} className="text-emerald-700" />
-              <h2 className="text-base font-extrabold text-slate-900">Transit Milestones & Route Telematics</h2>
+              <h2 className="text-base font-extrabold text-slate-900">
+                Route Milestones: Sangli Central Godown ➔ Bedag Village
+              </h2>
             </div>
             <span className="badge badge-danger text-[10px]">SHORTAGE RECORDED</span>
           </div>
 
           {/* Timeline */}
           <div className="space-y-4 relative pl-6 before:content-[''] before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
-            
             {/* Step 1 */}
             <div className="relative">
               <div className="absolute -left-6 top-0.5 w-5 h-5 rounded-full bg-emerald-600 border-2 border-white flex items-center justify-center text-white text-[10px]">
@@ -92,14 +113,14 @@ const TransporterConsole = () => {
               </div>
               <div className="text-xs">
                 <div className="font-extrabold text-slate-900 flex items-center gap-2">
-                  <span>Departure Weighbridge • Central Godown #1</span>
+                  <span>Departure Weighbridge • Sangli Central Godown #1</span>
                   <span className="text-[10px] font-mono text-slate-400">14-Oct 09:30 AM</span>
                 </div>
                 <p className="text-[11px] text-slate-600 mt-0.5">
                   Gross: 14,250 KG | Tare: 9,250 KG | <strong>Net Grain: 5,000 KG Dispatched</strong>
                 </p>
                 <div className="text-[10px] text-emerald-800 font-bold mt-0.5">
-                  Electronic Seal ID: #SL-9988-A1 (Verified Intact)
+                  Electronic Seal ID: #SEAL-SAN-9988-A1 (Verified Intact)
                 </div>
               </div>
             </div>
@@ -111,11 +132,11 @@ const TransporterConsole = () => {
               </div>
               <div className="text-xs">
                 <div className="font-extrabold text-slate-900 flex items-center gap-2">
-                  <span>Toll Naka RFID Checkpoint #4</span>
+                  <span>Miraj Bypass Toll Checkpoint</span>
                   <span className="text-[10px] font-mono text-slate-400">14-Oct 10:15 AM</span>
                 </div>
                 <p className="text-[11px] text-slate-600 mt-0.5">
-                  RFID FastTag scan recorded. Vehicle followed official designated PDS transit corridor.
+                  FastTag RFID confirmed. Truck followed designated Sangli-Miraj-Bedag corridor.
                 </p>
               </div>
             </div>
@@ -127,16 +148,16 @@ const TransporterConsole = () => {
               </div>
               <div className="text-xs">
                 <div className="font-extrabold text-slate-900 flex items-center gap-2">
-                  <span>Arrival at Destination FPS102 (Hadapsar)</span>
+                  <span>Arrival at FPS-BED-001 (Bedag Village)</span>
                   <span className="text-[10px] font-mono text-slate-400">14-Oct 11:20 AM</span>
                 </div>
                 <p className="text-[11px] text-slate-600 mt-0.5">
-                  Saraswati Fair Price Store • Unloading started in presence of dealer Suresh Patil.
+                  Bedag Seva Store • Unloading completed in presence of dealer Suresh Patil.
                 </p>
               </div>
             </div>
 
-            {/* Step 4: Discrepancy */}
+            {/* Step 4: Discrepancy Flag */}
             <div className="relative">
               <div className="absolute -left-6 top-0.5 w-5 h-5 rounded-full bg-red-600 border-2 border-white flex items-center justify-center text-white text-[10px]">
                 !
@@ -150,7 +171,7 @@ const TransporterConsole = () => {
                   Dispatched: <strong>5,000.0 KG</strong> ➔ Received: <strong>4,850.0 KG</strong>. Shortage: <strong>150.0 KG (3.0%)</strong>.
                 </p>
                 <div className="text-[10px] text-red-700 font-semibold mt-1">
-                  Status: DISCREPANCY_FLAGGED • Under statutory review by District Supply Officer.
+                  Status: DISCREPANCY_FLAGGED • Under statutory review by District Supply Officer Anand Kulkarni.
                 </div>
               </div>
             </div>
@@ -162,22 +183,22 @@ const TransporterConsole = () => {
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <h3 className="text-sm font-extrabold text-slate-900">Official Electronic Waybill Slip</h3>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold">
-              E-WAYBILL #WB-991208
+              E-WAYBILL #WB-SAN-1002
             </span>
           </div>
 
           <div className="space-y-2.5 text-xs text-slate-700">
             <div className="flex justify-between border-b border-slate-100 pb-1.5">
               <span className="text-slate-500">Waybill Code:</span>
-              <strong className="font-mono text-slate-900">DISP-1002</strong>
+              <strong className="font-mono text-slate-900">DISP-SAN-1002</strong>
             </div>
             <div className="flex justify-between border-b border-slate-100 pb-1.5">
               <span className="text-slate-500">Source Godown:</span>
-              <strong>Central Godown #1 (GOD-101)</strong>
+              <strong>WH-SAN-001 (Sangli Central)</strong>
             </div>
             <div className="flex justify-between border-b border-slate-100 pb-1.5">
               <span className="text-slate-500">Destination Shop:</span>
-              <strong className="text-emerald-900">FPS102 (Saraswati Store)</strong>
+              <strong className="text-emerald-900">FPS-BED-001 (Bedag Village)</strong>
             </div>
             <div className="flex justify-between border-b border-slate-100 pb-1.5">
               <span className="text-slate-500">Grain Commodity:</span>
@@ -188,7 +209,7 @@ const TransporterConsole = () => {
               <strong className="font-mono text-slate-900">5,000.0 KG</strong>
             </div>
             <div className="flex justify-between border-b border-slate-100 pb-1.5">
-              <span className="text-slate-500">Recorded at Shop:</span>
+              <span className="text-slate-500">Recorded at Bedag Shop:</span>
               <strong className="font-mono text-red-600">4,850.0 KG</strong>
             </div>
             <div className="flex justify-between border-b border-slate-100 pb-1.5">

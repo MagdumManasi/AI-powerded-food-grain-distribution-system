@@ -1,103 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   MessageSquareWarning,
   Plus,
-  Search,
-  Filter,
   CheckCircle2,
-  Clock,
-  AlertTriangle,
-  User,
-  Store,
-  ShieldCheck,
-  ArrowRight,
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { ROLES } from '../context/roles';
-
-const MOCK_COMPLAINTS = [
-  {
-    id: 'GRV-2026-081',
-    beneficiaryName: 'Ramesh Kumar',
-    rationCard: 'RC-AAY-889901',
-    shopCode: 'FPS102',
-    shopName: 'Saraswati Fair Price Store',
-    category: 'WEIGHMENT_SHORTAGE',
-    categoryLabel: 'Weighment Shortage',
-    description: 'Electronic weigh scale at shop showed 35 kg on display, but actual weight measured at home was only 33.5 kg (1.5 kg shortage).',
-    date: '16 Oct 2026',
-    status: 'UNDER_INVESTIGATION',
-    priority: 'HIGH',
-    assignedOfficer: 'Officer Rajesh Verma (DSO Pune)',
-    officerNotes: 'Assigned weights & measures inspector to calibrate FPS102 scale within 48 hours.',
-  },
-  {
-    id: 'GRV-2026-079',
-    beneficiaryName: 'Sunita Kamble',
-    rationCard: 'RC-PHH-665510',
-    shopCode: 'FPS102',
-    shopName: 'Saraswati Fair Price Store',
-    category: 'OVERCHARGING',
-    categoryLabel: 'Statutory Rate Overcharge',
-    description: 'Dealer demanded ₹4.00 per KG for rice instead of the central government statutory rate of ₹3.00 per KG.',
-    date: '15 Oct 2026',
-    status: 'SHOW_CAUSE_NOTICE_ISSUED',
-    priority: 'HIGH',
-    assignedOfficer: 'Officer Rajesh Verma (DSO Pune)',
-    officerNotes: 'Show-cause notice served to dealer Suresh Patil. Hearing scheduled on 20-Oct-2026.',
-  },
-  {
-    id: 'GRV-2026-065',
-    beneficiaryName: 'Deepak More',
-    rationCard: 'RC-PHH-991203',
-    shopCode: 'FPS101',
-    shopName: 'Anand Fair Price Store',
-    category: 'SHOP_CLOSED',
-    categoryLabel: 'Irregular Shop Hours',
-    description: 'Shop was found closed during official morning distribution hours (09:00 AM - 11:30 AM).',
-    date: '10 Oct 2026',
-    status: 'RESOLVED',
-    priority: 'MEDIUM',
-    assignedOfficer: 'Officer Rajesh Verma (DSO Pune)',
-    officerNotes: 'Dealer submitted medical emergency certificate. Written warning recorded on compliance file.',
-  },
-];
+import { dataService } from '../services/dataService';
 
 const Complaints = () => {
-  const { user } = useAuth();
-  const role = user?.role || ROLES.DISTRICT_OFFICER;
-
-  const [complaints, setComplaints] = useState(MOCK_COMPLAINTS);
+  const [complaints, setComplaints] = useState([]);
   const [filterCategory, setFilterCategory] = useState('ALL');
   const [showModal, setShowModal] = useState(false);
   const [newComplaint, setNewComplaint] = useState({
-    beneficiaryName: 'Ramesh Kumar',
-    rationCard: 'RC-AAY-889901',
-    shopCode: 'FPS102',
+    beneficiaryName: 'Tukaram Shinde',
+    rationCard: 'RC-SAN-AAY-1001',
+    village: 'Bedag',
+    shopCode: 'FPS-BED-001',
     category: 'WEIGHMENT_SHORTAGE',
     description: '',
   });
 
-  const handleCreate = (e) => {
+  const fetchComplaints = async () => {
+    try {
+      const res = await dataService.getComplaints();
+      setComplaints(res.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchComplaints();
+    const unsub = dataService.subscribe(() => fetchComplaints());
+    return () => unsub();
+  }, []);
+
+  const handleCreate = async (e) => {
     e.preventDefault();
-    const created = {
-      id: 'GRV-2026-08' + (complaints.length + 2),
-      beneficiaryName: newComplaint.beneficiaryName,
-      rationCard: newComplaint.rationCard,
-      shopCode: newComplaint.shopCode,
-      shopName: newComplaint.shopCode === 'FPS102' ? 'Saraswati Fair Price Store' : 'Anand Fair Price Store',
-      category: newComplaint.category,
-      categoryLabel: newComplaint.category.replace('_', ' '),
-      description: newComplaint.description,
-      date: 'Just now',
-      status: 'UNDER_INVESTIGATION',
-      priority: 'HIGH',
-      assignedOfficer: 'Officer Rajesh Verma (DSO)',
-      officerNotes: 'Automated intake ticket dispatched to Taluka Supply Officer for physical inspection.',
-    };
-    setComplaints([created, ...complaints]);
-    setShowModal(false);
-    alert('Citizen grievance lodged successfully! Token: ' + created.id);
+    try {
+      const res = await dataService.submitComplaint(newComplaint);
+      setShowModal(false);
+      alert(`Citizen grievance lodged successfully in Sangli District PDS Portal! Token: ${res.data?.id}`);
+    } catch (err) {
+      alert(err.message || 'Error submitting grievance');
+    }
   };
 
   const filtered = complaints.filter((c) => {
@@ -112,16 +57,16 @@ const Complaints = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">Citizen Grievance Redressal Portal</h1>
-            <span className="badge badge-warning text-[10px]">NFSA SECTION 14 OVERSIGHT</span>
+            <span className="badge badge-warning text-[10px]">SANGLI DISTRICT OVERSIGHT</span>
           </div>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Transparent beneficiary complaint tracking, dealer show-cause notices & statutory investigation
+            Transparent beneficiary complaint tracking in Bedag & Belanki villages under NFSA Section 14
           </p>
         </div>
 
         <button
           onClick={() => setShowModal(true)}
-          className="btn btn-primary text-xs shadow"
+          className="btn btn-primary text-xs shadow cursor-pointer"
         >
           <Plus size={16} />
           <span>Lodge Grievance</span>
@@ -135,7 +80,7 @@ const Complaints = () => {
           <button
             key={cat}
             onClick={() => setFilterCategory(cat)}
-            className={`btn btn-sm ${
+            className={`btn btn-sm cursor-pointer ${
               filterCategory === cat ? 'btn-primary' : 'btn-secondary text-slate-600'
             }`}
           >
@@ -154,7 +99,9 @@ const Complaints = () => {
                   {c.id}
                 </span>
                 <span className="badge badge-danger text-[9px]">{c.categoryLabel}</span>
-                <span className="text-xs text-slate-400 font-semibold">{c.date}</span>
+                <span className="text-xs text-slate-400 font-semibold">
+                  {new Date(c.date).toLocaleDateString()}
+                </span>
               </div>
 
               <div className="flex items-center gap-2">
@@ -174,7 +121,7 @@ const Complaints = () => {
               <div>
                 <div className="text-[10px] text-slate-400 uppercase font-bold">Complainant (Beneficiary)</div>
                 <div className="font-bold text-slate-900 mt-0.5">{c.beneficiaryName}</div>
-                <div className="text-slate-500 font-mono text-[11px]">{c.rationCard}</div>
+                <div className="text-slate-500 font-mono text-[11px]">{c.rationCard} ({c.village} Village)</div>
               </div>
 
               <div>
@@ -186,7 +133,7 @@ const Complaints = () => {
               <div>
                 <div className="text-[10px] text-slate-400 uppercase font-bold">Investigating Authority</div>
                 <div className="font-bold text-slate-800 mt-0.5">{c.assignedOfficer}</div>
-                <div className="text-slate-500 text-[11px]">District Supply Office (DSO)</div>
+                <div className="text-slate-500 text-[11px]">District Supply Office (Sangli)</div>
               </div>
             </div>
 
@@ -257,9 +204,10 @@ const Complaints = () => {
                     onChange={(e) => setNewComplaint({ ...newComplaint, shopCode: e.target.value })}
                     className="form-input text-xs"
                   >
-                    <option value="FPS102">FPS102 - Saraswati Fair Price Store</option>
-                    <option value="FPS101">FPS101 - Anand Fair Price Store</option>
-                    <option value="FPS103">FPS103 - Janta Ration Agency</option>
+                    <option value="FPS-BED-001">FPS-BED-001 - Bedag Seva Store #1</option>
+                    <option value="FPS-BED-002">FPS-BED-002 - Jai Kisan Kendra (Bedag)</option>
+                    <option value="FPS-BEL-001">FPS-BEL-001 - Belanki Sahakari FPS</option>
+                    <option value="FPS-BEL-002">FPS-BEL-002 - Belanki Gramin Kendra</option>
                   </select>
                 </div>
                 <div>
@@ -294,13 +242,13 @@ const Complaints = () => {
               </div>
 
               <div className="flex items-center gap-2 pt-2">
-                <button type="submit" className="btn btn-primary btn-sm flex-1">
+                <button type="submit" className="btn btn-primary btn-sm flex-1 cursor-pointer">
                   Register Grievance
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="btn btn-secondary btn-sm"
+                  className="btn btn-secondary btn-sm cursor-pointer"
                 >
                   Cancel
                 </button>

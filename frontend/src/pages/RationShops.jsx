@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import api from '../api/client';
-import { Store, Search, Filter, ShieldAlert, ArrowRight, Eye } from 'lucide-react';
+import { Store, Search, Eye, AlertTriangle, ShieldCheck, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { dataService } from '../services/dataService';
 
 const RationShops = () => {
   const [shops, setShops] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
-
-  useEffect(() => {
-    fetchShops();
-  }, []);
+  const [villageFilter, setVillageFilter] = useState('ALL');
 
   const fetchShops = async () => {
     try {
-      const res = await api.get('/ration-shops');
-      setShops(res.data.data);
+      const res = await dataService.getFpsShops();
+      setShops(res.data || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -24,22 +20,34 @@ const RationShops = () => {
     }
   };
 
+  useEffect(() => {
+    fetchShops();
+    const unsub = dataService.subscribe(() => fetchShops());
+    return () => unsub();
+  }, []);
+
   const filtered = shops.filter((s) => {
+    const q = searchTerm.toLowerCase();
     const matchesSearch =
-      s.shopName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.shopCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.district.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'ALL' || s.currentStatus === statusFilter;
-    return matchesSearch && matchesStatus;
+      s.shopName.toLowerCase().includes(q) ||
+      s.shopCode.toLowerCase().includes(q) ||
+      s.dealerName.toLowerCase().includes(q);
+
+    const matchesVillage = villageFilter === 'ALL' || s.village === villageFilter;
+
+    return matchesSearch && matchesVillage;
   });
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Fair Price Shops (FPS) Management</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Fair Price Shops (FPS) Registry</h1>
+            <span className="badge badge-info text-[10px]">SANGLI DISTRICT</span>
+          </div>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Licensed distribution dealers, stock levels, and automated risk scoring
+            Village distribution outlets in Bedag & Belanki, Miraj Taluka with risk profile scoring
           </p>
         </div>
       </div>
@@ -50,7 +58,7 @@ const RationShops = () => {
           <Search size={16} className="absolute inset-y-0 left-3 my-auto text-slate-400" />
           <input
             type="text"
-            placeholder="Search by shop code, name, or district..."
+            placeholder="Search by shop code, dealer, or name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="form-input pl-9 text-xs"
@@ -58,94 +66,98 @@ const RationShops = () => {
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <Filter size={16} className="text-slate-400 shrink-0" />
           <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="form-input text-xs w-full sm:w-44"
+            value={villageFilter}
+            onChange={(e) => setVillageFilter(e.target.value)}
+            className="form-input text-xs w-full sm:w-48"
           >
-            <option value="ALL">All Statuses</option>
-            <option value="ACTIVE">ACTIVE</option>
-            <option value="UNDER_REVIEW">UNDER_REVIEW</option>
-            <option value="INACTIVE">INACTIVE</option>
+            <option value="ALL">All Villages (Bedag & Belanki)</option>
+            <option value="Bedag">Bedag Village (416410)</option>
+            <option value="Belanki">Belanki Village (416418)</option>
           </select>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="table-container shadow-sm">
-        <table>
-          <thead>
-            <tr>
-              <th>Shop Code</th>
-              <th>Fair Price Store</th>
-              <th>Dealer Name</th>
-              <th>District</th>
-              <th>Beneficiaries</th>
-              <th>Storage Capacity</th>
-              <th>Status</th>
-              <th>AI Risk Indicator</th>
-              <th className="text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="9" className="text-center py-8 text-slate-400 text-xs">Loading ration shops...</td>
-              </tr>
-            ) : filtered.length === 0 ? (
-              <tr>
-                <td colSpan="9" className="text-center py-8 text-slate-400 text-xs">No shops found matching filter.</td>
-              </tr>
-            ) : (
-              filtered.map((s) => {
-                const isHighRisk = s.riskScore > 50;
-                return (
-                  <tr key={s.id} className={isHighRisk ? 'bg-amber-50/40' : ''}>
-                    <td className="font-bold text-slate-900 font-mono">{s.shopCode}</td>
-                    <td>
-                      <div className="font-extrabold text-slate-900">{s.shopName}</div>
-                      <div className="text-[11px] text-slate-400">{s.address}</div>
-                    </td>
-                    <td className="text-xs text-slate-700">{s.ownerName}</td>
-                    <td className="text-xs font-semibold text-slate-600">{s.district}</td>
-                    <td>
-                      <span className="font-bold text-slate-800">{s.beneficiaryCount}</span>
-                    </td>
-                    <td className="text-xs text-slate-500">{Number(s.capacity).toLocaleString()} KG</td>
-                    <td>
-                      <span className={`badge ${s.currentStatus === 'ACTIVE' ? 'badge-success' : 'badge-danger'}`}>
-                        {s.currentStatus}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`badge ${
-                            s.riskScore > 50
-                              ? 'badge-danger'
-                              : s.riskScore > 20
-                              ? 'badge-warning'
-                              : 'badge-success'
-                          }`}
-                        >
-                          {s.riskScore > 0 ? `${s.riskScore} / 100` : 'NORMAL (0.0)'}
-                        </span>
-                        {isHighRisk && <ShieldAlert size={14} className="text-red-600 animate-bounce" />}
-                      </div>
-                    </td>
-                    <td className="text-right">
-                      <Link to={`/ration-shops/${s.id}`} className="btn btn-secondary btn-sm">
-                        <Eye size={14} />
-                        <span>Inspect</span>
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+      {/* Shops Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {loading ? (
+          <div className="col-span-2 text-center py-8 text-slate-400 text-xs">
+            Loading Fair Price Shops in Sangli District...
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="col-span-2 text-center py-8 text-slate-400 text-xs">
+            No shops found matching filter criteria.
+          </div>
+        ) : (
+          filtered.map((shop) => (
+            <div
+              key={shop.id}
+              className={`card p-5 border transition space-y-3 ${
+                shop.currentStatus === 'UNDER_REVIEW'
+                  ? 'border-red-300 bg-red-50/20 shadow-sm'
+                  : 'border-slate-200 hover:border-slate-300'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-2 pb-2 border-b border-slate-100">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-black text-slate-900 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
+                      {shop.shopCode}
+                    </span>
+                    <span className="badge badge-info text-[9px]">{shop.village} Village</span>
+                  </div>
+                  <h3 className="text-base font-extrabold text-slate-900 mt-1">{shop.shopName}</h3>
+                </div>
+
+                {shop.currentStatus === 'UNDER_REVIEW' ? (
+                  <span className="badge badge-danger text-[10px] flex items-center gap-1">
+                    <AlertTriangle size={12} />
+                    <span>RISK: {shop.riskScore}</span>
+                  </span>
+                ) : (
+                  <span className="badge badge-success text-[10px] flex items-center gap-1">
+                    <ShieldCheck size={12} />
+                    <span>RISK: {shop.riskScore}</span>
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold">Authorized Dealer:</span>
+                  <div className="font-bold text-slate-900">{shop.dealerName}</div>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold">Enrolled Cards:</span>
+                  <div className="font-bold text-slate-900">{shop.enrolledCardholders} Families</div>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold">Current Rice Stock:</span>
+                  <div className="font-black text-emerald-800">{shop.riceStockKg.toLocaleString()} KG</div>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 uppercase font-bold">Current Wheat Stock:</span>
+                  <div className="font-black text-amber-800">{shop.wheatStockKg.toLocaleString()} KG</div>
+                </div>
+              </div>
+
+              <div className="text-[11px] text-slate-500 flex items-center gap-1.5 pt-1">
+                <MapPin size={13} className="text-slate-400 shrink-0" />
+                <span className="truncate">{shop.address}</span>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <span className={`badge ${shop.currentStatus === 'UNDER_REVIEW' ? 'badge-danger' : 'badge-success'}`}>
+                  {shop.currentStatus.replace(/_/g, ' ')}
+                </span>
+                <Link to={`/ration-shops/${shop.id}`} className="btn btn-secondary btn-sm cursor-pointer">
+                  <Eye size={13} />
+                  <span>Inspect Dossier</span>
+                </Link>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

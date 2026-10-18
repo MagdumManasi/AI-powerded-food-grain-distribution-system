@@ -1,28 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import api from '../api/client';
-import { Warehouse, MapPin, Boxes, Plus, X } from 'lucide-react';
+import { Warehouse, Plus, Scale, MapPin, Eye, Phone, Mail, ShieldCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { dataService } from '../services/dataService';
 
 const Godowns = () => {
-  const [godowns, setGodowns] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({
-    godownCode: '',
-    name: '',
-    location: '',
-    district: 'Pune',
-    capacity: 100000.0,
-    currentStatus: 'ACTIVE',
-  });
 
-  useEffect(() => {
-    fetchGodowns();
-  }, []);
-
-  const fetchGodowns = async () => {
+  const fetchWarehouses = async () => {
     try {
-      const res = await api.get('/godowns');
-      setGodowns(res.data.data);
+      const res = await dataService.getWarehouses();
+      setWarehouses(res.data || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -30,145 +18,95 @@ const Godowns = () => {
     }
   };
 
-  const handleCreate = async (e) => {
-    e.preventDefault();
-    try {
-      await api.post('/godowns', formData);
-      setShowModal(false);
-      fetchGodowns();
-    } catch (err) {
-      alert(err.response?.data?.message || 'Error creating godown');
-    }
-  };
+  useEffect(() => {
+    fetchWarehouses();
+    const unsub = dataService.subscribe(() => fetchWarehouses());
+    return () => unsub();
+  }, []);
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Central Grain Storage Godowns</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Grain Storage Godowns & Depots</h1>
+            <span className="badge badge-info text-[10px]">SANGLI DISTRICT BUFFER</span>
+          </div>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Bulk procurement depots and regional buffer stock holding facilities
+            Regional bulk grain storage facilities, silo capacities & weighbridge calibration records
           </p>
         </div>
-        <button onClick={() => setShowModal(true)} className="btn btn-primary text-xs shadow">
-          <Plus size={16} />
-          <span>Add Godown</span>
-        </button>
+
+        <Link to="/warehouse-ops" className="btn btn-primary text-xs shadow cursor-pointer">
+          <Warehouse size={14} />
+          <span>Depot Operations Console</span>
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {loading ? (
-          <div className="col-span-3 text-center py-8 text-slate-400 text-xs">Loading storage godowns...</div>
-        ) : godowns.length === 0 ? (
-          <div className="col-span-3 text-center py-8 text-slate-400 text-xs">No godowns registered.</div>
+          <div className="col-span-2 text-center py-8 text-slate-400 text-xs">
+            Loading storage warehouses...
+          </div>
         ) : (
-          godowns.map((g) => (
-            <div key={g.id} className="card bg-white p-5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-mono text-xs font-bold bg-slate-100 text-slate-800 px-2 py-0.5 rounded">
-                    {g.godownCode}
-                  </span>
-                  <span className="badge badge-success">{g.currentStatus}</span>
-                </div>
-                <h3 className="font-extrabold text-slate-900 text-base mb-1">{g.name}</h3>
-                <p className="text-xs text-slate-500 flex items-center gap-1 mb-4">
-                  <MapPin size={13} className="text-slate-400" />
-                  <span>{g.location}, {g.district}</span>
-                </p>
-              </div>
-
-              <div className="p-3 bg-emerald-50/70 border border-emerald-100 rounded-xl text-xs flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-500">Holding Capacity</span>
-                  <div className="font-black text-emerald-950 text-sm">
-                    {Number(g.capacity).toLocaleString()} KG
+          warehouses.map((wh) => (
+            <div key={wh.id} className="card p-5 border border-slate-200 hover:border-slate-300 transition space-y-4">
+              <div className="flex items-start justify-between gap-2 pb-3 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-sky-100 text-sky-800 flex items-center justify-center font-black">
+                    <Warehouse size={24} />
+                  </div>
+                  <div>
+                    <span className="font-mono text-xs font-black text-slate-900 px-2 py-0.5 rounded bg-slate-100 border border-slate-200">
+                      {wh.warehouseCode}
+                    </span>
+                    <h3 className="text-base font-extrabold text-slate-900 mt-1">{wh.name}</h3>
                   </div>
                 </div>
-                <Warehouse size={22} className="text-emerald-700" />
+                <span className="badge badge-success text-[10px]">{wh.status}</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <span className="text-[10px] text-slate-400 uppercase font-bold">Total Storage Capacity</span>
+                  <div className="text-lg font-black text-slate-900">{(wh.capacityKg / 1000).toFixed(1)} MT</div>
+                  <div className="text-[10px] text-slate-500">{wh.capacityKg.toLocaleString()} KG Silo</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-emerald-50/70 border border-emerald-100">
+                  <span className="text-[10px] text-emerald-800 uppercase font-bold">Current Stock Level</span>
+                  <div className="text-lg font-black text-emerald-950">{(wh.currentStockKg / 1000).toFixed(1)} MT</div>
+                  <div className="text-[10px] text-emerald-700">Rice: {(wh.riceStockKg / 1000).toFixed(1)} MT | Wheat: {(wh.wheatStockKg / 1000).toFixed(1)} MT</div>
+                </div>
+              </div>
+
+              <div className="space-y-1.5 text-xs text-slate-600 border-t border-slate-100 pt-3">
+                <div className="flex items-center gap-1.5">
+                  <MapPin size={13} className="text-slate-400 shrink-0" />
+                  <span>{wh.address}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Phone size={13} className="text-slate-400 shrink-0" />
+                  <span>Depot Contact: {wh.contactNumber} • Manager: <strong>{wh.managerName}</strong></span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Scale size={13} className="text-emerald-700 shrink-0" />
+                  <span>Weighbridge Status: <strong className="text-emerald-800">{wh.weighbridgeStatus}</strong> (Last check: {wh.lastCalibrationDate})</span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-xs text-slate-500">
+                  Linked Outlets: <strong>{wh.linkedFpsCount} Fair Price Shops</strong>
+                </span>
+                <Link to="/warehouse-ops" className="btn btn-secondary btn-sm cursor-pointer">
+                  <span>Manage Outbound Dispatches</span>
+                </Link>
               </div>
             </div>
           ))
         )}
       </div>
-
-      {showModal && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl animate-fade-in border border-slate-200">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-4">
-              <h3 className="font-black text-slate-900 text-base">Register New Storage Godown</h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-slate-600">
-                <X size={18} />
-              </button>
-            </div>
-
-            <form onSubmit={handleCreate} className="space-y-3 text-xs">
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Godown Code</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.godownCode}
-                  onChange={(e) => setFormData({ ...formData, godownCode: e.target.value })}
-                  placeholder="e.g. GOD-103"
-                  className="form-input"
-                />
-              </div>
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Facility Name</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g. Regional Buffer Storage Depo"
-                  className="form-input"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">District</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.district}
-                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
-                <div>
-                  <label className="font-bold text-slate-700 block mb-1">Holding Capacity (KG)</label>
-                  <input
-                    type="number"
-                    required
-                    value={formData.capacity}
-                    onChange={(e) => setFormData({ ...formData, capacity: parseFloat(e.target.value) })}
-                    className="form-input"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="font-bold text-slate-700 block mb-1">Physical Address</label>
-                <input
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  placeholder="MIDC Industrial Area, Plot 44"
-                  className="form-input"
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-4">
-                <button type="button" onClick={() => setShowModal(false)} className="btn btn-secondary">
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-primary">
-                  Save Godown
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

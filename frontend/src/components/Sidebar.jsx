@@ -21,7 +21,6 @@ import {
   CreditCard,
   MessageSquareWarning,
   Scale,
-  Sparkles,
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -39,9 +38,9 @@ const Sidebar = () => {
             title: 'Apex State Governance',
             items: [
               { to: '/dashboard', label: 'State Executive Console', icon: LayoutDashboard },
-              { to: '/hierarchy', label: 'Hierarchy Explorer', icon: Network, badge: 'Full State' },
+              { to: '/hierarchy', label: 'Hierarchy Explorer', icon: Network, badge: 'Sangli Scope' },
               { to: '/ration-shops', label: 'Fair Price Shops (FPS)', icon: Store },
-              { to: '/beneficiaries', label: 'All State Beneficiaries', icon: Users },
+              { to: '/beneficiaries', label: 'Beneficiary Registry', icon: Users },
             ],
           },
           {
@@ -49,8 +48,8 @@ const Sidebar = () => {
             items: [
               { to: '/dispatch', label: 'Dispatches to Lowest Shops', icon: Truck, badge: 'Supply Flow' },
               { to: '/receipts', label: 'Receipts & Shortages', icon: CheckCircle2 },
-              { to: '/godowns', label: 'Central Storage Godowns', icon: Warehouse },
-              { to: '/inventory', label: 'Statewide Stock Ledgers', icon: Boxes },
+              { to: '/godowns', label: 'Storage Godowns', icon: Warehouse },
+              { to: '/inventory', label: 'Stock Inventory Ledgers', icon: Boxes },
               { to: '/distributions', label: 'Distribution Transactions', icon: PackageCheck },
             ],
           },
@@ -72,8 +71,8 @@ const Sidebar = () => {
           {
             title: 'District Administration',
             items: [
-              { to: '/dashboard', label: 'District Overview (Pune)', icon: LayoutDashboard },
-              { to: '/hierarchy', label: 'Taluka & Village Hierarchy', icon: Network, badge: '14 Talukas' },
+              { to: '/dashboard', label: 'Sangli District Overview', icon: LayoutDashboard },
+              { to: '/hierarchy', label: 'Bedag & Belanki Hierarchy', icon: Network, badge: 'Miraj Taluka' },
               { to: '/ration-shops', label: 'Fair Price Shops (FPS)', icon: Store },
               { to: '/beneficiaries', label: 'District Beneficiaries', icon: Users },
             ],
@@ -83,7 +82,7 @@ const Sidebar = () => {
             items: [
               { to: '/dispatch', label: 'Dispatches to Shops (FPS)', icon: Truck, badge: 'Lowest Tier' },
               { to: '/receipts', label: 'Receipts & Shortage Tracking', icon: CheckCircle2 },
-              { to: '/godowns', label: 'District Godowns', icon: Warehouse },
+              { to: '/godowns', label: 'District Warehouses', icon: Warehouse },
               { to: '/inventory', label: 'Stock Ledgers', icon: Boxes },
               { to: '/distributions', label: 'Shop Distribution Log', icon: PackageCheck },
             ],
@@ -105,7 +104,7 @@ const Sidebar = () => {
           {
             title: 'Godown Depot Operations',
             items: [
-              { to: '/warehouse-ops', label: 'Depot Operations Console', icon: Warehouse, badge: 'GOD-101' },
+              { to: '/warehouse-ops', label: 'Depot Operations Console', icon: Warehouse, badge: 'WH-SAN-001' },
               { to: '/inventory', label: 'Depot Stock & Silos', icon: Boxes },
               { to: '/dispatch', label: 'Create Dispatch Waybill', icon: Truck },
               { to: '/receipts', label: 'Inbound State Allocations', icon: CheckCircle2 },
@@ -115,7 +114,7 @@ const Sidebar = () => {
             title: 'Logistics Fleet',
             items: [
               { to: '/transporter-ops', label: 'Transporter Fleet Dispatch', icon: Scale },
-              { to: '/godowns', label: 'Depot Profile', icon: Store },
+              { to: '/godowns', label: 'Warehouse Profile', icon: Store },
               { to: '/ai-assistant', label: 'Depot AI Helpdesk', icon: BotMessageSquare },
               { to: '/documents', label: 'Buffer & Storage SOPs', icon: BookOpen },
             ],
@@ -127,10 +126,10 @@ const Sidebar = () => {
           {
             title: 'Logistics & Fleet Transit',
             items: [
-              { to: '/transporter-ops', label: 'Vehicle Dashboard', icon: Truck, badge: 'MH-12-PQ-9988' },
+              { to: '/transporter-ops', label: 'Vehicle Dashboard', icon: Truck, badge: 'MH-10-AZ-5542' },
               { to: '/dispatch', label: 'Assigned Waybills / Trips', icon: Boxes },
               { to: '/receipts', label: 'Weighbridge Slips / Receipts', icon: CheckCircle2 },
-              { to: '/godowns', label: 'Pickup Godown Details', icon: Warehouse },
+              { to: '/godowns', label: 'Pickup Warehouse Details', icon: Warehouse },
             ],
           },
           {
@@ -145,14 +144,14 @@ const Sidebar = () => {
       case ROLES.FPS_OWNER:
         return [
           {
-            title: 'Shop Point-of-Sale (FPS102)',
+            title: 'Shop Point-of-Sale (FPS-BED-001)',
             items: [
               { to: '/dashboard', label: 'Shop Dashboard', icon: LayoutDashboard },
               { to: '/distributions', label: 'Issue Grain to Beneficiary', icon: PackageCheck, badge: 'Point of Sale' },
               { to: '/receipts', label: 'Confirm Inbound Delivery', icon: CheckCircle2 },
               { to: '/inventory', label: 'Shop Stock Ledger', icon: Boxes },
               { to: '/beneficiaries', label: 'Registered Cardholders', icon: Users },
-              { to: '/ration-shops/2', label: 'My Shop Profile (FPS102)', icon: Store },
+              { to: '/ration-shops/1', label: 'My Shop Profile (Bedag)', icon: Store },
             ],
           },
           {
@@ -171,9 +170,9 @@ const Sidebar = () => {
           {
             title: 'Citizen Beneficiary Portal',
             items: [
-              { to: '/citizen-portal', label: 'My Digital Ration Passbook', icon: CreditCard, badge: 'RC-AAY' },
+              { to: '/citizen-portal', label: 'My Digital Ration Passbook', icon: CreditCard, badge: 'RC-SAN-AAY' },
               { to: '/distributions', label: 'Grain Collection History', icon: PackageCheck },
-              { to: '/ration-shops/2', label: 'Assigned Fair Price Shop', icon: Store },
+              { to: '/ration-shops/1', label: 'Assigned Fair Price Shop', icon: Store },
               { to: '/complaints', label: 'File Grievance / Complaint', icon: MessageSquareWarning },
             ],
           },
@@ -274,10 +273,10 @@ const Sidebar = () => {
       {/* Official Footnote */}
       <div className="p-3 bg-gradient-to-br from-emerald-50 to-green-100 rounded-xl border border-emerald-200 text-xs text-emerald-900 mt-4">
         <div className="font-bold flex items-center gap-1.5 mb-1">
-          <span>🇮🇳 NFSA Hierarchy Governance</span>
+          <span>🇮🇳 Sangli PDS Governance</span>
         </div>
         <p className="text-[10px] text-emerald-800 leading-relaxed font-medium">
-          State ➔ District ➔ Taluka ➔ Village ➔ FPS ➔ Citizen. Strict data boundary enforcement.
+          Maharashtra ➔ Sangli ➔ Miraj ➔ Bedag & Belanki ➔ Citizen. Strict jurisdiction boundaries.
         </p>
       </div>
     </aside>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../api/client';
+import { dataService } from '../services/dataService';
 import {
   Warehouse,
   Boxes,
@@ -10,42 +10,36 @@ import {
   AlertTriangle,
   ArrowRight,
   ShieldCheck,
-  FileText,
   Wheat,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const WarehouseConsole = () => {
   const [dispatches, setDispatches] = useState([]);
-  const [receipts, setReceipts] = useState([]);
+  const [warehouse, setWarehouse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDispatchModal, setShowDispatchModal] = useState(false);
 
   const [formData, setFormData] = useState({
-    dispatchCode: 'DISP-1003',
+    dispatchCode: '',
     godownId: 1,
     rationShopId: 1,
-    transporterId: 1,
     grainTypeId: 1,
     quantityDispatched: 3000.0,
-    vehicleNumber: 'MH-12-PQ-9988',
-    driverName: 'Vikram Singh',
+    vehicleNumber: 'MH-10-AZ-5542',
+    driverName: 'Arjun Patil',
     weighbridgeGrossKg: 12250.0,
     weighbridgeTareKg: 9250.0,
   });
 
-  useEffect(() => {
-    fetchWarehouseData();
-  }, []);
-
-  const fetchWarehouseData = async () => {
+  const fetchData = async () => {
     try {
-      const [dRes, rRes] = await Promise.all([
-        api.get('/dispatch'),
-        api.get('/receipts'),
+      const [dRes, wRes] = await Promise.all([
+        dataService.getDispatches(),
+        dataService.getWarehouseById(1),
       ]);
-      setDispatches(dRes.data.data || []);
-      setReceipts(rRes.data.data || []);
+      setDispatches(dRes.data || []);
+      setWarehouse(wRes.data || null);
     } catch (err) {
       console.error(err);
     } finally {
@@ -53,18 +47,23 @@ const WarehouseConsole = () => {
     }
   };
 
+  useEffect(() => {
+    fetchData();
+    const unsub = dataService.subscribe(() => fetchData());
+    return () => unsub();
+  }, []);
+
   const handleCreateDispatch = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/dispatch', {
+      await dataService.createDispatch({
         ...formData,
-        status: 'IN_TRANSIT',
+        dispatchCode: formData.dispatchCode || `DISP-SAN-${1000 + dispatches.length + 1}`,
       });
       setShowDispatchModal(false);
-      fetchWarehouseData();
-      alert('Electronic Waybill & Dispatch Manifest generated successfully!');
+      alert('Electronic Waybill & Dispatch Manifest generated successfully in Sangli Central Ledger!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Error creating dispatch order');
+      alert(err.message || 'Error creating dispatch order');
     }
   };
 
@@ -74,18 +73,18 @@ const WarehouseConsole = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Godown Depot Operations Console</h1>
-            <span className="badge badge-info text-[10px]">GODOWN ID: GOD-101</span>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Sangli Central Grain Godown #1</h1>
+            <span className="badge badge-info text-[10px]">DEPOT CODE: WH-SAN-001</span>
           </div>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Central Grain Storage Godown #1 • Sector 18, Industrial Area, Haveli Taluka, Pune
+            Plot 42, Kupwad Industrial Area, Sangli • 100 MT Buffer Depot & Weighbridge Operations
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowDispatchModal(true)}
-            className="btn btn-primary text-xs shadow"
+            className="btn btn-primary text-xs shadow cursor-pointer"
           >
             <Plus size={16} />
             <span>Generate Dispatch Waybill</span>
@@ -107,19 +106,25 @@ const WarehouseConsole = () => {
 
         <div className="card">
           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Current Stored Buffer</div>
-          <div className="text-2xl font-black text-emerald-800">75.0 MT</div>
-          <div className="text-xs text-slate-500 mt-1">75% Capacity Utilized (Normal)</div>
+          <div className="text-2xl font-black text-emerald-800">
+            {warehouse ? (warehouse.currentStockKg / 1000).toFixed(1) : '78.5'} MT
+          </div>
+          <div className="text-xs text-slate-500 mt-1">Buffer Utilization: Safe Normal</div>
         </div>
 
         <div className="card">
-          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Rice Silo #1 & #2</div>
-          <div className="text-2xl font-black text-slate-900">45,000 KG</div>
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Rice Silo Reserve</div>
+          <div className="text-2xl font-black text-slate-900">
+            {warehouse ? warehouse.riceStockKg.toLocaleString() : '46,500'} KG
+          </div>
           <div className="text-xs text-emerald-700 font-semibold mt-1">Fortified Parboiled Rice</div>
         </div>
 
         <div className="card">
-          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Wheat Silo #3</div>
-          <div className="text-2xl font-black text-amber-700">30,000 KG</div>
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Wheat Silo Reserve</div>
+          <div className="text-2xl font-black text-amber-700">
+            {warehouse ? warehouse.wheatStockKg.toLocaleString() : '32,000'} KG
+          </div>
           <div className="text-xs text-slate-500 mt-1">Sharbati Grain Reserves</div>
         </div>
       </div>
@@ -131,7 +136,7 @@ const WarehouseConsole = () => {
             <div className="flex items-center gap-2">
               <Truck size={18} className="text-emerald-700" />
               <h2 className="text-base font-extrabold text-slate-900">
-                Outbound Grain Dispatches (Godown ➔ Fair Price Shops)
+                Outbound Grain Dispatches (WH-SAN-001 ➔ Bedag & Belanki Shops)
               </h2>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
@@ -140,7 +145,7 @@ const WarehouseConsole = () => {
           </div>
           <button
             onClick={() => setShowDispatchModal(true)}
-            className="btn btn-primary btn-sm"
+            className="btn btn-primary btn-sm cursor-pointer"
           >
             <Plus size={14} />
             <span>New Outbound Waybill</span>
@@ -153,12 +158,12 @@ const WarehouseConsole = () => {
               <tr>
                 <th>Waybill / Dispatch Code</th>
                 <th>Destination FPS</th>
+                <th>Village</th>
                 <th>Commodity</th>
                 <th>Dispatched (KG)</th>
                 <th>Truck Reg #</th>
                 <th>Driver Name</th>
-                <th>Departure Time</th>
-                <th>Delivery Status</th>
+                <th>Status</th>
                 <th className="text-right">Action</th>
               </tr>
             </thead>
@@ -174,18 +179,18 @@ const WarehouseConsole = () => {
                   <tr key={d.id} className={d.status === 'PARTIALLY_RECEIVED' ? 'bg-amber-50/50' : ''}>
                     <td className="font-mono text-xs font-bold text-slate-900">{d.dispatchCode}</td>
                     <td className="font-bold text-emerald-900">
-                      {d.shopName}
-                      <div className="text-[10px] text-slate-400 font-mono">Shop ID: #{d.rationShopId}</div>
+                      {d.destinationShopName}
+                      <div className="text-[10px] text-slate-400 font-mono">Code: {d.destinationShopCode}</div>
+                    </td>
+                    <td>
+                      <span className="badge badge-info text-[9px]">{d.destinationVillage}</span>
                     </td>
                     <td><span className="badge badge-info">{d.grainTypeName}</span></td>
                     <td className="font-black text-slate-900 text-xs">
                       {Number(d.quantityDispatched).toLocaleString()} KG
                     </td>
                     <td className="font-mono text-xs font-bold text-slate-700">{d.vehicleNumber}</td>
-                    <td className="text-xs text-slate-600">Vikram Singh</td>
-                    <td className="text-xs text-slate-500 font-mono">
-                      {d.dispatchDate ? new Date(d.dispatchDate).toLocaleDateString() : 'Active'}
-                    </td>
+                    <td className="text-xs text-slate-600">Arjun Patil</td>
                     <td>
                       <span className={`badge ${
                         d.status === 'DELIVERED'
@@ -198,7 +203,7 @@ const WarehouseConsole = () => {
                       </span>
                     </td>
                     <td className="text-right">
-                      <Link to={`/ration-shops/${d.rationShopId}`} className="btn btn-secondary btn-sm">
+                      <Link to={`/ration-shops/${d.destinationShopId}`} className="btn btn-secondary btn-sm">
                         View Destination
                       </Link>
                     </td>
@@ -217,24 +222,12 @@ const WarehouseConsole = () => {
             <div className="pb-2 border-b border-slate-200">
               <h3 className="text-base font-black text-slate-900">Issue Electronic Dispatch Waybill</h3>
               <p className="text-xs text-slate-500">
-                Origin: Central Grain Storage Godown #1 (GOD-101) • Certified Weighbridge
+                Origin: Sangli Central Grain Godown #1 (WH-SAN-001) • Certified Weighbridge
               </p>
             </div>
 
             <form onSubmit={handleCreateDispatch} className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Waybill Number
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.dispatchCode}
-                    onChange={(e) => setFormData({ ...formData, dispatchCode: e.target.value })}
-                    className="form-input text-xs font-mono font-bold"
-                  />
-                </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
                     Destination Fair Price Shop
@@ -244,14 +237,13 @@ const WarehouseConsole = () => {
                     onChange={(e) => setFormData({ ...formData, rationShopId: Number(e.target.value) })}
                     className="form-input text-xs"
                   >
-                    <option value="2">FPS102 - Saraswati Fair Price Store (Hadapsar)</option>
-                    <option value="1">FPS101 - Anand Fair Price Store (Pune)</option>
-                    <option value="3">FPS103 - Janta Ration Agency (Nashik)</option>
+                    <option value="1">FPS-BED-001 - Bedag Seva Store #1 (Bedag)</option>
+                    <option value="2">FPS-BED-002 - Jai Kisan Kendra (Bedag)</option>
+                    <option value="3">FPS-BEL-001 - Belanki Sahakari FPS (Belanki)</option>
+                    <option value="4">FPS-BEL-002 - Belanki Gramin Kendra (Belanki)</option>
                   </select>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
                     Grain Commodity
@@ -261,10 +253,13 @@ const WarehouseConsole = () => {
                     onChange={(e) => setFormData({ ...formData, grainTypeId: Number(e.target.value) })}
                     className="form-input text-xs"
                   >
-                    <option value="1">Rice (Fortified Super Fine)</option>
+                    <option value="1">Rice (Fortified Parboiled)</option>
                     <option value="2">Wheat (Sharbati Quality)</option>
                   </select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
                     Dispatched Net Quantity (KG)
@@ -277,9 +272,6 @@ const WarehouseConsole = () => {
                     className="form-input text-xs font-bold"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
                     Vehicle Number
@@ -292,41 +284,29 @@ const WarehouseConsole = () => {
                     className="form-input text-xs font-mono"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">
-                    Driver / Operator
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.driverName}
-                    onChange={(e) => setFormData({ ...formData, driverName: e.target.value })}
-                    className="form-input text-xs"
-                  />
-                </div>
               </div>
 
               {/* Weighbridge Calibration Card */}
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1">
                 <div className="font-bold text-slate-800 flex items-center gap-1.5">
                   <Scale size={14} className="text-emerald-700" />
-                  <span>Depot Weighbridge Automatic Scale Reading</span>
+                  <span>Kupwad Depot Weighbridge Automatic Scale Reading</span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 pt-1 font-mono text-[11px]">
-                  <div>Gross: <strong>14,250 KG</strong></div>
+                  <div>Gross: <strong>{(9250 + Number(formData.quantityDispatched || 0)).toLocaleString()} KG</strong></div>
                   <div>Tare: <strong>9,250 KG</strong></div>
-                  <div className="text-emerald-800 font-bold">Net: <strong>5,000 KG</strong></div>
+                  <div className="text-emerald-800 font-bold">Net: <strong>{Number(formData.quantityDispatched || 0).toLocaleString()} KG</strong></div>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 pt-2">
-                <button type="submit" className="btn btn-primary btn-sm flex-1">
+                <button type="submit" className="btn btn-primary btn-sm flex-1 cursor-pointer">
                   Authorize & Issue Waybill
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowDispatchModal(false)}
-                  className="btn btn-secondary btn-sm"
+                  className="btn btn-secondary btn-sm cursor-pointer"
                 >
                   Cancel
                 </button>

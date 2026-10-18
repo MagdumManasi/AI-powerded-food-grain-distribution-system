@@ -11,12 +11,11 @@ import {
   ArrowRight,
   ShieldAlert,
   CheckCircle2,
-  ChevronRight,
-  ChevronDown,
   Layers,
   Sparkles,
   Info,
 } from 'lucide-react';
+import { GEOGRAPHY } from '../mock/locations';
 
 const HIERARCHY_TREE = {
   state: {
@@ -31,142 +30,136 @@ const HIERARCHY_TREE = {
     monthlyQuotaMT: '4,50,000 MT',
     districts: [
       {
-        id: 'pune',
-        name: 'Pune District',
-        code: 'DIST-PUN-01',
-        dso: 'Officer Rajesh Verma',
-        talukasCount: 14,
-        villagesCount: 1860,
-        fpsCount: 420,
-        population: '94.2 Lakh',
-        riskLevel: 'ELEVATED', // Due to FPS102
-        allocatedQuotaMT: '38,500 MT',
-        activeGodowns: ['Central Grain Storage Godown #1 (GOD-101)', 'Hadapsar Sub-Depot (GOD-104)'],
+        id: 'sangli',
+        name: 'Sangli District',
+        code: 'DIST-SAN-01',
+        dso: 'Shri Anand Kulkarni, Dy. Collector (Supply)',
+        talukasCount: 10,
+        villagesCount: 730,
+        fpsCount: 1480,
+        population: '28.2 Lakh',
+        riskLevel: 'ELEVATED', // Due to FPS-BED-001 anomaly
+        allocatedQuotaMT: '12,500 MT',
+        activeGodowns: ['Sangli Central Grain Godown #1 (WH-SAN-001)', 'Miraj Buffer Grain Depot (WH-SAN-002)'],
         talukas: [
           {
-            id: 'haveli',
-            name: 'Haveli Taluka',
-            code: 'TAL-HAV-02',
-            talukaOfficer: 'Mr. Arvind Joshi',
-            villagesCount: 112,
-            fpsCount: 54,
-            quotaMT: '4,200 MT',
+            id: 'miraj',
+            name: 'Miraj Taluka',
+            code: 'TAL-MIR-01',
+            talukaOfficer: 'Smt. Vandana Patil, Tehsildar (Food & Supplies)',
+            villagesCount: 64,
+            fpsCount: 142,
+            quotaMT: '3,200 MT',
             status: 'FLAGGED_ANOMALY',
             villages: [
               {
-                id: 'hadapsar',
-                name: 'Hadapsar Village / Sector',
-                code: 'VIL-HAD-10',
-                fpsCount: 4,
-                beneficiaries: 1850,
+                id: 'bedag',
+                name: 'Bedag Village',
+                code: 'VIL-BED-01',
+                pincode: '416410',
+                fpsCount: 2,
+                beneficiaries: 1450,
                 shops: [
                   {
-                    id: 2,
-                    shopCode: 'FPS102',
-                    shopName: 'Saraswati Fair Price Store',
+                    id: 1,
+                    shopCode: 'FPS-BED-001',
+                    shopName: 'Bedag Seva Fair Price Store #1',
                     dealer: 'Suresh Patil',
-                    cardholders: 480,
+                    cardholders: 420,
                     status: 'UNDER_REVIEW',
                     riskScore: 75.0,
-                    alert: '150 KG Transit Shortage & +73.3% Volume Spike',
+                    alert: '150 KG Transit Shortage (DISP-SAN-1002) & +73.3% Volume Spike',
                     beneficiariesList: [
-                      { id: 1, name: 'Ramesh Kumar', cardNo: 'RC-AAY-889901', type: 'AAY', quota: '35 KG', status: 'VERIFIED' },
-                      { id: 2, name: 'Vijay Patil', cardNo: 'RC-PHH-774412', type: 'PHH', quota: '25 KG', status: 'VERIFIED' },
-                      { id: 3, name: 'Sunita Kamble', cardNo: 'RC-PHH-665510', type: 'PHH', quota: '15 KG', status: 'VERIFIED' },
-                    ]
+                      { id: 1, name: 'Tukaram Shinde', cardNo: 'RC-SAN-AAY-1001', type: 'AAY', quota: '35 KG', status: 'VERIFIED' },
+                      { id: 2, name: 'Pandurang Mane', cardNo: 'RC-SAN-PHH-2002', type: 'PHH', quota: '25 KG', status: 'VERIFIED' },
+                      { id: 3, name: 'Sushila Kamble', cardNo: 'RC-SAN-PHH-2003', type: 'PHH', quota: '15 KG', status: 'VERIFIED' },
+                      { id: 4, name: 'Mahadev Chavan', cardNo: 'RC-SAN-AAY-1004', type: 'AAY', quota: '35 KG', status: 'VERIFIED' },
+                    ],
                   },
                   {
-                    id: 1,
-                    shopCode: 'FPS101',
-                    shopName: 'Anand Fair Price Store',
+                    id: 2,
+                    shopCode: 'FPS-BED-002',
+                    shopName: 'Jai Kisan Ration Kendra Bedag',
                     dealer: 'Anand Shinde',
-                    cardholders: 520,
+                    cardholders: 380,
                     status: 'ACTIVE',
                     riskScore: 12.0,
                     alert: null,
                     beneficiariesList: [
-                      { id: 4, name: 'Deepak More', cardNo: 'RC-PHH-991203', type: 'PHH', quota: '20 KG', status: 'VERIFIED' },
-                      { id: 5, name: 'Pooja Jadhav', cardNo: 'RC-NPHH-554412', type: 'NPHH', quota: '10 KG', status: 'VERIFIED' },
-                    ]
-                  }
-                ]
+                      { id: 7, name: 'Babu Sawant', cardNo: 'RC-SAN-AAY-1007', type: 'AAY', quota: '35 KG', status: 'VERIFIED' },
+                      { id: 8, name: 'Sunita Bhosale', cardNo: 'RC-SAN-PHH-2008', type: 'PHH', quota: '25 KG', status: 'VERIFIED' },
+                      { id: 9, name: 'Maruti Jadhav', cardNo: 'RC-SAN-PHH-2009', type: 'PHH', quota: '20 KG', status: 'VERIFIED' },
+                    ],
+                  },
+                ],
               },
               {
-                id: 'wagholi',
-                name: 'Wagholi Village',
-                code: 'VIL-WAG-11',
-                fpsCount: 3,
-                beneficiaries: 1420,
+                id: 'belanki',
+                name: 'Belanki Village',
+                code: 'VIL-BEL-02',
+                pincode: '416418',
+                fpsCount: 2,
+                beneficiaries: 1280,
                 shops: [
                   {
                     id: 3,
-                    shopCode: 'FPS103',
-                    shopName: 'Janta Ration Agency',
+                    shopCode: 'FPS-BEL-001',
+                    shopName: 'Belanki Sahakari FPS Store',
                     dealer: 'Mahesh Kale',
-                    cardholders: 410,
+                    cardholders: 390,
                     status: 'ACTIVE',
                     riskScore: 8.5,
                     alert: null,
-                    beneficiariesList: []
-                  }
-                ]
-              }
-            ]
+                    beneficiariesList: [
+                      { id: 11, name: 'Appasaheb Patil', cardNo: 'RC-SAN-AAY-1011', type: 'AAY', quota: '35 KG', status: 'VERIFIED' },
+                      { id: 12, name: 'Shankar Mali', cardNo: 'RC-SAN-PHH-2012', type: 'PHH', quota: '25 KG', status: 'VERIFIED' },
+                      { id: 13, name: 'Kashibai Waghmare', cardNo: 'RC-SAN-AAY-1013', type: 'AAY', quota: '35 KG', status: 'VERIFIED' },
+                    ],
+                  },
+                  {
+                    id: 4,
+                    shopCode: 'FPS-BEL-002',
+                    shopName: 'Belanki Gramin Annapurna Kendra',
+                    dealer: 'Savita Jadhav',
+                    cardholders: 340,
+                    status: 'ACTIVE',
+                    riskScore: 14.2,
+                    alert: null,
+                    beneficiariesList: [
+                      { id: 16, name: 'Dadasaheb Gaikwad', cardNo: 'RC-SAN-AAY-1016', type: 'AAY', quota: '35 KG', status: 'VERIFIED' },
+                      { id: 17, name: 'Usha Salunkhe', cardNo: 'RC-SAN-PHH-2017', type: 'PHH', quota: '20 KG', status: 'VERIFIED' },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
           {
-            id: 'baramati',
-            name: 'Baramati Taluka',
-            code: 'TAL-BAR-03',
-            talukaOfficer: 'Mrs. Rekha Thorat',
+            id: 'walwa',
+            name: 'Walwa (Islampur) Taluka',
+            code: 'TAL-WAL-02',
+            talukaOfficer: 'Shri R. V. Deshpande, Tehsildar',
             villagesCount: 98,
-            fpsCount: 46,
-            quotaMT: '3,800 MT',
-            status: 'NORMAL',
-            villages: []
-          },
-          {
-            id: 'junnar',
-            name: 'Junnar Taluka',
-            code: 'TAL-JUN-04',
-            talukaOfficer: 'Mr. Prakash Sonawane',
-            villagesCount: 142,
-            fpsCount: 62,
+            fpsCount: 180,
             quotaMT: '4,100 MT',
             status: 'NORMAL',
-            villages: []
-          }
-        ]
+            villages: [],
+          },
+          {
+            id: 'tasgaon',
+            name: 'Tasgaon Taluka',
+            code: 'TAL-TAS-03',
+            talukaOfficer: 'Smt. S. P. Shinde, Tehsildar',
+            villagesCount: 72,
+            fpsCount: 135,
+            quotaMT: '2,900 MT',
+            status: 'NORMAL',
+            villages: [],
+          },
+        ],
       },
-      {
-        id: 'nashik',
-        name: 'Nashik District',
-        code: 'DIST-NSK-02',
-        dso: 'Officer M. K. Kulkarni',
-        talukasCount: 15,
-        villagesCount: 1920,
-        fpsCount: 485,
-        population: '61.1 Lakh',
-        riskLevel: 'NORMAL',
-        allocatedQuotaMT: '29,400 MT',
-        activeGodowns: ['Regional Storage Facility #2 (GOD-102)'],
-        talukas: []
-      },
-      {
-        id: 'thane',
-        name: 'Thane District',
-        code: 'DIST-THN-03',
-        dso: 'Officer Sneha Rao',
-        talukasCount: 7,
-        villagesCount: 840,
-        fpsCount: 390,
-        population: '80.5 Lakh',
-        riskLevel: 'NORMAL',
-        allocatedQuotaMT: '32,100 MT',
-        activeGodowns: ['Thane Coastal Godown (GOD-105)'],
-        talukas: []
-      }
-    ]
-  }
+    ],
+  },
 };
 
 const HierarchyExplorer = () => {
@@ -182,10 +175,10 @@ const HierarchyExplorer = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-black text-slate-900 tracking-tight">Administrative Hierarchy & Supply Chain</h1>
-            <span className="badge badge-success text-[10px]">6-TIER NFSA GOVERNANCE</span>
+            <span className="badge badge-success text-[10px]">SANGLI PDS JURISDICTION</span>
           </div>
           <p className="text-xs text-slate-500 font-medium mt-0.5">
-            Strict jurisdiction boundaries: State ➔ District ➔ Taluka ➔ Village ➔ Fair Price Shop (FPS) ➔ Beneficiary
+            Strict jurisdiction boundaries: State (Maharashtra) ➔ District (Sangli) ➔ Taluka (Miraj) ➔ Villages (Bedag & Belanki) ➔ Fair Price Shops ➔ Beneficiaries
           </p>
         </div>
 
@@ -196,18 +189,18 @@ const HierarchyExplorer = () => {
           </Link>
           <Link to="/dispatch" className="btn btn-secondary text-xs">
             <Truck size={14} className="text-emerald-700" />
-            <span>Trace Grain Flow</span>
+            <span>Trace Grain Movement</span>
           </Link>
         </div>
       </div>
 
-      {/* Visual Pipeline Banner: Physical Food Grain Flow */}
+      {/* Visual Pipeline Banner: Physical Food Grain Flow in Sangli */}
       <div className="card bg-gradient-to-r from-emerald-900 via-green-900 to-emerald-950 text-white p-5 border-emerald-800 shadow-md">
         <div className="flex items-center justify-between mb-3 border-b border-emerald-800/80 pb-2">
           <div className="flex items-center gap-2">
             <Layers size={18} className="text-emerald-400" />
             <h2 className="text-sm font-black tracking-wide uppercase text-emerald-100">
-              End-to-End Physical Grain Movement Pipeline
+              End-to-End Physical Grain Movement Pipeline (Sangli District)
             </h2>
           </div>
           <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-800/60 text-emerald-200 font-bold border border-emerald-700">
@@ -220,38 +213,38 @@ const HierarchyExplorer = () => {
           <div className="p-3 rounded-xl bg-emerald-800/50 border border-emerald-700/60">
             <div className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider mb-1">Tier 1 • State</div>
             <div className="font-extrabold text-white text-sm">State Allocation</div>
-            <p className="text-[11px] text-emerald-200 mt-1">FCI Central Silos to State Buffer Quotas</p>
+            <p className="text-[11px] text-emerald-200 mt-1">FCI Central Pool to Maharashtra Buffer</p>
           </div>
 
           {/* Step 2 */}
           <div className="p-3 rounded-xl bg-emerald-800/50 border border-emerald-700/60">
-            <div className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider mb-1">Tier 2 • Taluka</div>
-            <div className="font-extrabold text-white text-sm">Central Godown</div>
-            <p className="text-[11px] text-emerald-200 mt-1">Bulk Storage & Weighbridge Calibration</p>
+            <div className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider mb-1">Tier 2 • Sangli Godown</div>
+            <div className="font-extrabold text-white text-sm">WH-SAN-001 Depot</div>
+            <p className="text-[11px] text-emerald-200 mt-1">Kupwad Silo & Certified Weighbridge</p>
           </div>
 
           {/* Step 3 */}
           <div className="p-3 rounded-xl bg-emerald-800/50 border border-emerald-700/60">
             <div className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider mb-1">Tier 3 • Transit</div>
-            <div className="font-extrabold text-white text-sm">Transporter Fleet</div>
-            <p className="text-[11px] text-emerald-200 mt-1">GPS E-Waybill & Toll Checkpoint Transit</p>
+            <div className="font-extrabold text-white text-sm">Carrier MH-10-AZ-5542</div>
+            <p className="text-[11px] text-emerald-200 mt-1">Krishna Valley Logistics (Driver: Arjun Patil)</p>
           </div>
 
           {/* Step 4 */}
           <div className="p-3 rounded-xl bg-amber-900/60 border border-amber-600/80 relative overflow-hidden">
             <div className="text-[10px] font-bold text-amber-300 uppercase tracking-wider mb-1 flex items-center justify-between">
-              <span>Tier 4 • Village</span>
+              <span>Tier 4 • Bedag Village</span>
               <span className="badge badge-danger text-[8px] px-1 py-0">ALERT</span>
             </div>
-            <div className="font-extrabold text-white text-sm">Village FPS Delivery</div>
-            <p className="text-[11px] text-amber-200 mt-1">Discrepancy: Dispatched 5000kg vs 4850kg</p>
+            <div className="font-extrabold text-white text-sm">FPS-BED-001 Delivery</div>
+            <p className="text-[11px] text-amber-200 mt-1">Shortage: 5000kg dispatched vs 4850kg received</p>
           </div>
 
           {/* Step 5 */}
           <div className="p-3 rounded-xl bg-emerald-800/50 border border-emerald-700/60">
             <div className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider mb-1">Tier 5 • Citizen</div>
             <div className="font-extrabold text-white text-sm">Beneficiary e-PoS</div>
-            <p className="text-[11px] text-emerald-200 mt-1">Biometric/OTP Statutory Quota Disbursal</p>
+            <p className="text-[11px] text-emerald-200 mt-1">Tukaram Shinde (Aadhaar Biometric Quota)</p>
           </div>
         </div>
       </div>
@@ -259,7 +252,7 @@ const HierarchyExplorer = () => {
       {/* 6-Tier Interactive Hierarchy Explorer */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Tier 1 & 2: State & Districts */}
+        {/* Tier 1 & 2: State & District */}
         <div className="lg:col-span-4 space-y-4">
           {/* State Card */}
           <div className="card border-emerald-300 bg-gradient-to-br from-emerald-50 to-white">
@@ -271,58 +264,34 @@ const HierarchyExplorer = () => {
               <span>🏛️ {HIERARCHY_TREE.state.name}</span>
             </h3>
             <div className="mt-3 grid grid-cols-2 gap-2 text-[11px] text-slate-600 font-semibold border-t border-emerald-100 pt-2">
-              <div>Districts: <strong className="text-slate-900">{HIERARCHY_TREE.state.districtsCount}</strong></div>
-              <div>Godowns: <strong className="text-slate-900">{HIERARCHY_TREE.state.activeGodowns}</strong></div>
-              <div>Fair Price Shops: <strong className="text-slate-900">{HIERARCHY_TREE.state.totalShops}</strong></div>
-              <div>Beneficiaries: <strong className="text-slate-900">{HIERARCHY_TREE.state.activeBeneficiaries}</strong></div>
+              <div>Districts: <strong className="text-slate-900">36</strong></div>
+              <div>Warehouses: <strong className="text-slate-900">420</strong></div>
+              <div>Fair Price Shops: <strong className="text-slate-900">52,400</strong></div>
+              <div>Beneficiaries: <strong className="text-slate-900">7.02 Cr</strong></div>
             </div>
           </div>
 
-          {/* Districts List */}
+          {/* District Card */}
           <div className="card">
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
-              <span className="text-xs font-black uppercase text-slate-500 tracking-wider">Level 2: Districts</span>
-              <span className="text-[10px] text-slate-400 font-bold">{HIERARCHY_TREE.state.districts.length} Listed</span>
+              <span className="text-xs font-black uppercase text-slate-500 tracking-wider">Level 2: District Division</span>
+              <span className="text-[10px] text-emerald-800 font-bold">Sangli District</span>
             </div>
 
-            <div className="space-y-2">
-              {HIERARCHY_TREE.state.districts.map((dist) => {
-                const isSelected = selectedDistrict?.id === dist.id;
-                return (
-                  <div
-                    key={dist.id}
-                    onClick={() => {
-                      setSelectedDistrict(dist);
-                      if (dist.talukas.length > 0) {
-                        setSelectedTaluka(dist.talukas[0]);
-                        setSelectedVillage(dist.talukas[0]?.villages[0]);
-                        setSelectedShop(dist.talukas[0]?.villages[0]?.shops[0]);
-                      }
-                    }}
-                    className={`p-3 rounded-xl border text-left cursor-pointer transition ${
-                      isSelected
-                        ? 'border-emerald-600 bg-emerald-50/80 shadow-sm'
-                        : 'border-slate-200 hover:bg-slate-50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="font-extrabold text-xs text-slate-900 flex items-center gap-1.5">
-                        <MapPin size={14} className={isSelected ? 'text-emerald-700' : 'text-slate-400'} />
-                        <span>{dist.name}</span>
-                      </div>
-                      {dist.riskLevel === 'ELEVATED' ? (
-                        <span className="badge badge-danger text-[9px]">ANOMALY FLAG</span>
-                      ) : (
-                        <span className="badge badge-success text-[9px]">NORMAL</span>
-                      )}
-                    </div>
-                    <div className="mt-1 text-[10px] text-slate-500 flex items-center justify-between">
-                      <span>DSO: {dist.dso}</span>
-                      <span className="font-mono font-bold text-slate-700">{dist.talukasCount} Talukas</span>
-                    </div>
-                  </div>
-                );
-              })}
+            <div
+              className={`p-3 rounded-xl border text-left cursor-pointer transition border-emerald-600 bg-emerald-50/80 shadow-sm`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="font-extrabold text-xs text-slate-900 flex items-center gap-1.5">
+                  <MapPin size={14} className="text-emerald-700" />
+                  <span>{selectedDistrict.name}</span>
+                </div>
+                <span className="badge badge-danger text-[9px]">ANOMALY UNDER REVIEW</span>
+              </div>
+              <div className="mt-1 text-[10px] text-slate-500 flex items-center justify-between">
+                <span>DSO: {selectedDistrict.dso}</span>
+                <span className="font-mono font-bold text-slate-700">10 Talukas</span>
+              </div>
             </div>
           </div>
         </div>
@@ -336,22 +305,71 @@ const HierarchyExplorer = () => {
                 <span className="text-xs font-black uppercase text-slate-500 tracking-wider">Level 3: Taluka Sub-Division</span>
                 <p className="text-[10px] text-slate-400">Within {selectedDistrict.name}</p>
               </div>
-              <span className="text-[10px] text-slate-400 font-bold">{selectedDistrict.talukas.length} Talukas</span>
+              <span className="text-[10px] text-slate-400 font-bold">{selectedDistrict.talukas.length} Talukas Listed</span>
             </div>
 
-            {selectedDistrict.talukas.length === 0 ? (
-              <p className="text-xs text-slate-400 py-4 text-center">Taluka records synchronized from district supply server.</p>
-            ) : (
-              <div className="space-y-2">
-                {selectedDistrict.talukas.map((tal) => {
-                  const isSelected = selectedTaluka?.id === tal.id;
-                  return (
-                    <div
-                      key={tal.id}
-                      onClick={() => {
-                        setSelectedTaluka(tal);
+            <div className="space-y-2">
+              {selectedDistrict.talukas.map((tal) => {
+                const isSelected = selectedTaluka?.id === tal.id;
+                return (
+                  <div
+                    key={tal.id}
+                    onClick={() => {
+                      setSelectedTaluka(tal);
+                      if (tal.villages.length > 0) {
                         setSelectedVillage(tal.villages[0]);
                         setSelectedShop(tal.villages[0]?.shops[0]);
+                      }
+                    }}
+                    className={`p-3 rounded-xl border text-left cursor-pointer transition ${
+                      isSelected
+                        ? 'border-emerald-600 bg-emerald-50/80 shadow-sm'
+                        : 'border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="font-extrabold text-xs text-slate-900 flex items-center gap-1.5">
+                        <Building2 size={14} className={isSelected ? 'text-emerald-700' : 'text-slate-400'} />
+                        <span>{tal.name}</span>
+                      </div>
+                      {tal.status === 'FLAGGED_ANOMALY' ? (
+                        <span className="badge badge-warning text-[9px]">INVESTIGATING</span>
+                      ) : (
+                        <span className="badge badge-success text-[9px]">NORMAL</span>
+                      )}
+                    </div>
+                    <div className="mt-1 text-[10px] text-slate-500 flex items-center justify-between">
+                      <span>Quota: {tal.quotaMT}</span>
+                      <span className="font-bold text-slate-700">{tal.fpsCount} Shops</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Village Selector: Bedag and Belanki */}
+          {selectedTaluka && (
+            <div className="card">
+              <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+                <div>
+                  <span className="text-xs font-black uppercase text-slate-500 tracking-wider">Level 4: Demo Villages</span>
+                  <p className="text-[10px] text-slate-400">Within {selectedTaluka.name}</p>
+                </div>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">
+                  VERIFIED LOCALITIES
+                </span>
+              </div>
+
+              <div className="space-y-2">
+                {selectedTaluka.villages.map((vil) => {
+                  const isSelected = selectedVillage?.id === vil.id;
+                  return (
+                    <div
+                      key={vil.id}
+                      onClick={() => {
+                        setSelectedVillage(vil);
+                        setSelectedShop(vil.shops[0]);
                       }}
                       className={`p-3 rounded-xl border text-left cursor-pointer transition ${
                         isSelected
@@ -360,68 +378,19 @@ const HierarchyExplorer = () => {
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="font-extrabold text-xs text-slate-900 flex items-center gap-1.5">
-                          <Building2 size={14} className={isSelected ? 'text-emerald-700' : 'text-slate-400'} />
-                          <span>{tal.name}</span>
-                        </div>
-                        {tal.status === 'FLAGGED_ANOMALY' && (
-                          <span className="badge badge-warning text-[9px]">INVESTIGATING</span>
-                        )}
+                        <div className="font-bold text-xs text-slate-900">{vil.name}</div>
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+                          Pin: {vil.pincode}
+                        </span>
                       </div>
                       <div className="mt-1 text-[10px] text-slate-500 flex items-center justify-between">
-                        <span>Quota: {tal.quotaMT}</span>
-                        <span className="font-bold text-slate-700">{tal.fpsCount} Shops</span>
+                        <span>Enrolled: <strong>{vil.beneficiaries}</strong></span>
+                        <span className="font-bold text-emerald-800">{vil.fpsCount} Fair Price Shops</span>
                       </div>
                     </div>
                   );
                 })}
               </div>
-            )}
-          </div>
-
-          {/* Village Selector */}
-          {selectedTaluka && (
-            <div className="card">
-              <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
-                <div>
-                  <span className="text-xs font-black uppercase text-slate-500 tracking-wider">Level 4: Village / Sector</span>
-                  <p className="text-[10px] text-slate-400">Within {selectedTaluka.name}</p>
-                </div>
-              </div>
-
-              {selectedTaluka.villages.length === 0 ? (
-                <p className="text-xs text-slate-400 py-4 text-center">Villages registered under taluka block.</p>
-              ) : (
-                <div className="space-y-2">
-                  {selectedTaluka.villages.map((vil) => {
-                    const isSelected = selectedVillage?.id === vil.id;
-                    return (
-                      <div
-                        key={vil.id}
-                        onClick={() => {
-                          setSelectedVillage(vil);
-                          setSelectedShop(vil.shops[0]);
-                        }}
-                        className={`p-3 rounded-xl border text-left cursor-pointer transition ${
-                          isSelected
-                            ? 'border-emerald-600 bg-emerald-50/80 shadow-sm'
-                            : 'border-slate-200 hover:bg-slate-50'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="font-bold text-xs text-slate-900">{vil.name}</div>
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
-                            {vil.fpsCount} FPS
-                          </span>
-                        </div>
-                        <div className="mt-1 text-[10px] text-slate-500">
-                          Enrolled Beneficiaries: <strong>{vil.beneficiaries}</strong>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -447,7 +416,7 @@ const HierarchyExplorer = () => {
                     <span>{selectedShop.shopName}</span>
                   </h4>
                   <div className="text-xs font-mono font-bold text-emerald-800 mt-0.5">
-                    Shop Code: {selectedShop.shopCode} • Licensee: {selectedShop.dealer}
+                    Code: {selectedShop.shopCode} • Licensee: {selectedShop.dealer}
                   </div>
                 </div>
 
@@ -455,7 +424,7 @@ const HierarchyExplorer = () => {
                   <div className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs">
                     <div className="font-bold flex items-center gap-1 mb-0.5">
                       <ShieldAlert size={14} className="text-red-600" />
-                      <span>Active Leakage Alert</span>
+                      <span>Active Anomaly Alert</span>
                     </div>
                     <p className="text-[11px]">{selectedShop.alert}</p>
                   </div>
@@ -482,7 +451,7 @@ const HierarchyExplorer = () => {
           <div className="card">
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
               <span className="text-xs font-black uppercase text-slate-500 tracking-wider">Level 6: End Beneficiaries</span>
-              <span className="badge badge-info text-[9px]">AAY / PHH QUOTA</span>
+              <span className="badge badge-info text-[9px]">AAY / PHH SCHEMES</span>
             </div>
 
             {selectedShop?.beneficiariesList?.length > 0 ? (
@@ -504,7 +473,7 @@ const HierarchyExplorer = () => {
                 </Link>
               </div>
             ) : (
-              <p className="text-xs text-slate-400 py-4 text-center">No individual cardholders loaded in demo view.</p>
+              <p className="text-xs text-slate-400 py-4 text-center">No individual cardholders loaded in preview.</p>
             )}
           </div>
         </div>
