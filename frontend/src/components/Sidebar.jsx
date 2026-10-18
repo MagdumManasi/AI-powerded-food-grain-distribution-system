@@ -1,6 +1,7 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { ROLES, ROLE_PROFILES } from '../context/roles';
 import {
   LayoutDashboard,
   Users,
@@ -15,146 +16,202 @@ import {
   BotMessageSquare,
   BookOpen,
   History,
-  ShieldAlert,
-  ShieldCheck
+  ShieldCheck,
+  Network,
+  CreditCard,
+  MessageSquareWarning,
+  Scale,
+  Sparkles,
 } from 'lucide-react';
 
 const Sidebar = () => {
   const { user } = useAuth();
-  const role = user?.role || 'OFFICER';
+  const location = useLocation();
+  const role = user?.role || ROLES.DISTRICT_OFFICER;
+  const profile = ROLE_PROFILES[role] || ROLE_PROFILES.DISTRICT_OFFICER;
 
-  // Role-based navigation structure
+  // Build role-isolated navigation structure
   const getRoleSections = () => {
     switch (role) {
-      case 'OFFICER':
+      case ROLES.SUPER_ADMIN:
+        return [
+          {
+            title: 'Apex State Governance',
+            items: [
+              { to: '/dashboard', label: 'State Executive Console', icon: LayoutDashboard },
+              { to: '/hierarchy', label: 'Hierarchy Explorer', icon: Network, badge: 'Full State' },
+              { to: '/ration-shops', label: 'Fair Price Shops (FPS)', icon: Store },
+              { to: '/beneficiaries', label: 'All State Beneficiaries', icon: Users },
+            ],
+          },
+          {
+            title: 'Grain Logistics & Movement',
+            items: [
+              { to: '/dispatch', label: 'Dispatches to Lowest Shops', icon: Truck, badge: 'Supply Flow' },
+              { to: '/receipts', label: 'Receipts & Shortages', icon: CheckCircle2 },
+              { to: '/godowns', label: 'Central Storage Godowns', icon: Warehouse },
+              { to: '/inventory', label: 'Statewide Stock Ledgers', icon: Boxes },
+              { to: '/distributions', label: 'Distribution Transactions', icon: PackageCheck },
+            ],
+          },
+          {
+            title: 'Intelligence & Accountability',
+            items: [
+              { to: '/alerts', label: 'Anomaly Engine & Alerts', icon: AlertTriangle, highlight: true },
+              { to: '/audit', label: 'AI Shop Audit Agent', icon: FileCheck2 },
+              { to: '/complaints', label: 'Citizen Grievances', icon: MessageSquareWarning },
+              { to: '/ai-assistant', label: 'Policy RAG Assistant', icon: BotMessageSquare },
+              { to: '/documents', label: 'Policy Knowledge Base', icon: BookOpen },
+              { to: '/audit-logs', label: 'Cryptographic Audit Trail', icon: History },
+            ],
+          },
+        ];
+
+      case ROLES.DISTRICT_OFFICER:
         return [
           {
             title: 'District Administration',
             items: [
-              { to: '/dashboard', label: 'District Overview', icon: LayoutDashboard },
+              { to: '/dashboard', label: 'District Overview (Pune)', icon: LayoutDashboard },
+              { to: '/hierarchy', label: 'Taluka & Village Hierarchy', icon: Network, badge: '14 Talukas' },
               { to: '/ration-shops', label: 'Fair Price Shops (FPS)', icon: Store },
               { to: '/beneficiaries', label: 'District Beneficiaries', icon: Users },
             ],
           },
           {
-            title: 'Grain Movement & Tracking',
+            title: 'Dispatches to Lowest Shops',
             items: [
-              { to: '/dispatch', label: 'Dispatches to Shops', icon: Truck, badge: 'Supply Flow' },
-              { to: '/receipts', label: 'Receipts & Shortages', icon: CheckCircle2 },
+              { to: '/dispatch', label: 'Dispatches to Shops (FPS)', icon: Truck, badge: 'Lowest Tier' },
+              { to: '/receipts', label: 'Receipts & Shortage Tracking', icon: CheckCircle2 },
               { to: '/godowns', label: 'District Godowns', icon: Warehouse },
               { to: '/inventory', label: 'Stock Ledgers', icon: Boxes },
-              { to: '/distributions', label: 'Shop Distributions', icon: PackageCheck },
+              { to: '/distributions', label: 'Shop Distribution Log', icon: PackageCheck },
             ],
           },
           {
-            title: 'AI Inspection & Oversight',
+            title: 'Inspection & Compliance',
             items: [
               { to: '/alerts', label: 'Anomaly Alerts & Risk', icon: AlertTriangle, highlight: true },
               { to: '/audit', label: 'AI Shop Audit Agent', icon: FileCheck2 },
+              { to: '/complaints', label: 'Grievance Redressal', icon: MessageSquareWarning },
               { to: '/ai-assistant', label: 'AI Policy Assistant', icon: BotMessageSquare },
-              { to: '/documents', label: 'PDS Policy Manuals', icon: BookOpen },
+              { to: '/documents', label: 'PDS Manuals & SOPs', icon: BookOpen },
             ],
           },
         ];
 
-      case 'FPS_OWNER':
+      case ROLES.WAREHOUSE_MANAGER:
         return [
           {
-            title: 'Shop Point-of-Sale (FPS)',
+            title: 'Godown Depot Operations',
+            items: [
+              { to: '/warehouse-ops', label: 'Depot Operations Console', icon: Warehouse, badge: 'GOD-101' },
+              { to: '/inventory', label: 'Depot Stock & Silos', icon: Boxes },
+              { to: '/dispatch', label: 'Create Dispatch Waybill', icon: Truck },
+              { to: '/receipts', label: 'Inbound State Allocations', icon: CheckCircle2 },
+            ],
+          },
+          {
+            title: 'Logistics Fleet',
+            items: [
+              { to: '/transporter-ops', label: 'Transporter Fleet Dispatch', icon: Scale },
+              { to: '/godowns', label: 'Depot Profile', icon: Store },
+              { to: '/ai-assistant', label: 'Depot AI Helpdesk', icon: BotMessageSquare },
+              { to: '/documents', label: 'Buffer & Storage SOPs', icon: BookOpen },
+            ],
+          },
+        ];
+
+      case ROLES.TRANSPORTER:
+        return [
+          {
+            title: 'Logistics & Fleet Transit',
+            items: [
+              { to: '/transporter-ops', label: 'Vehicle Dashboard', icon: Truck, badge: 'MH-12-PQ-9988' },
+              { to: '/dispatch', label: 'Assigned Waybills / Trips', icon: Boxes },
+              { to: '/receipts', label: 'Weighbridge Slips / Receipts', icon: CheckCircle2 },
+              { to: '/godowns', label: 'Pickup Godown Details', icon: Warehouse },
+            ],
+          },
+          {
+            title: 'Transit Guidelines',
+            items: [
+              { to: '/documents', label: 'Transit Rules & SOP', icon: BookOpen },
+              { to: '/ai-assistant', label: 'Transit Assistant', icon: BotMessageSquare },
+            ],
+          },
+        ];
+
+      case ROLES.FPS_OWNER:
+        return [
+          {
+            title: 'Shop Point-of-Sale (FPS102)',
             items: [
               { to: '/dashboard', label: 'Shop Dashboard', icon: LayoutDashboard },
-              { to: '/ration-shops/2', label: 'My Shop Profile (FPS102)', icon: Store },
               { to: '/distributions', label: 'Issue Grain to Beneficiary', icon: PackageCheck, badge: 'Point of Sale' },
-              { to: '/inventory', label: 'Current Shop Stock', icon: Boxes },
               { to: '/receipts', label: 'Confirm Inbound Delivery', icon: CheckCircle2 },
-              { to: '/beneficiaries', label: 'Assigned Beneficiaries', icon: Users },
+              { to: '/inventory', label: 'Shop Stock Ledger', icon: Boxes },
+              { to: '/beneficiaries', label: 'Registered Cardholders', icon: Users },
+              { to: '/ration-shops/2', label: 'My Shop Profile (FPS102)', icon: Store },
             ],
           },
           {
             title: 'Compliance & Assistance',
             items: [
-              { to: '/alerts', label: 'Shop Anomaly Alerts', icon: AlertTriangle },
+              { to: '/alerts', label: 'Shop Anomaly Status', icon: AlertTriangle },
+              { to: '/complaints', label: 'Beneficiary Grievances', icon: MessageSquareWarning },
               { to: '/documents', label: 'Entitlement Quotas & SOP', icon: BookOpen },
               { to: '/ai-assistant', label: 'PDS AI Helpdesk', icon: BotMessageSquare },
             ],
           },
         ];
 
-      case 'TRANSPORTER':
+      case ROLES.BENEFICIARY:
         return [
           {
-            title: 'Fleet & Grain Transit',
+            title: 'Citizen Beneficiary Portal',
             items: [
-              { to: '/dashboard', label: 'Fleet Operations', icon: LayoutDashboard },
-              { to: '/dispatch', label: 'Assigned Waybills / Transit', icon: Truck },
-              { to: '/receipts', label: 'Delivery Confirmations', icon: CheckCircle2 },
-              { to: '/godowns', label: 'Pickup Godowns', icon: Warehouse },
+              { to: '/citizen-portal', label: 'My Digital Ration Passbook', icon: CreditCard, badge: 'RC-AAY' },
+              { to: '/distributions', label: 'Grain Collection History', icon: PackageCheck },
+              { to: '/ration-shops/2', label: 'Assigned Fair Price Shop', icon: Store },
+              { to: '/complaints', label: 'File Grievance / Complaint', icon: MessageSquareWarning },
             ],
           },
           {
-            title: 'Guidance',
+            title: 'Rights & Entitlements',
             items: [
-              { to: '/ai-assistant', label: 'Transit Assistant', icon: BotMessageSquare },
-              { to: '/documents', label: 'Transport Guidelines', icon: BookOpen },
+              { to: '/ai-assistant', label: 'Ask PDS Citizen AI', icon: BotMessageSquare },
+              { to: '/documents', label: 'NFSA Quotas & Rights', icon: BookOpen },
             ],
           },
         ];
 
-      case 'AUDITOR':
+      case ROLES.AUDITOR:
         return [
           {
-            title: 'Statutory Audit & Evidence',
+            title: 'Statutory Vigilance Audit',
             items: [
-              { to: '/dashboard', label: 'Audit Dashboard', icon: LayoutDashboard },
-              { to: '/alerts', label: 'Flagged Anomalies', icon: AlertTriangle, highlight: true },
+              { to: '/dashboard', label: 'Vigilance Overview', icon: LayoutDashboard },
+              { to: '/alerts', label: 'Flagged Anomalies & Risk', icon: AlertTriangle, highlight: true },
               { to: '/audit', label: 'AI Shop Audit Agent', icon: FileCheck2 },
               { to: '/audit-logs', label: 'Cryptographic Audit Trail', icon: History },
+              { to: '/hierarchy', label: 'Hierarchy Risk Matrix', icon: Network },
             ],
           },
           {
-            title: 'Inspection Verification',
+            title: 'Forensic Reconciliation',
             items: [
-              { to: '/ration-shops', label: 'FPS Risk Registry', icon: Store },
               { to: '/receipts', label: 'Shortage Discrepancies', icon: CheckCircle2 },
+              { to: '/ration-shops', label: 'Shop Risk Registry', icon: Store },
               { to: '/distributions', label: 'Distribution Ledger', icon: PackageCheck },
-              { to: '/documents', label: 'Statutory Regulations', icon: BookOpen },
-              { to: '/ai-assistant', label: 'AI Forensic Assistant', icon: BotMessageSquare },
+              { to: '/complaints', label: 'Grievance Review', icon: MessageSquareWarning },
+              { to: '/ai-assistant', label: 'Forensic Policy Assistant', icon: BotMessageSquare },
             ],
           },
         ];
 
-      case 'ADMIN':
       default:
-        return [
-          {
-            title: 'System Governance',
-            items: [
-              { to: '/dashboard', label: 'Executive Dashboard', icon: LayoutDashboard },
-              { to: '/beneficiaries', label: 'Beneficiary Management', icon: Users },
-              { to: '/ration-shops', label: 'Fair Price Shops (FPS)', icon: Store },
-              { to: '/godowns', label: 'Storage Godowns', icon: Warehouse },
-              { to: '/inventory', label: 'Stock Inventory', icon: Boxes },
-            ],
-          },
-          {
-            title: 'Supply Chain Operations',
-            items: [
-              { to: '/dispatch', label: 'Shipment Dispatches', icon: Truck },
-              { to: '/receipts', label: 'Shipment Receipts', icon: CheckCircle2 },
-              { to: '/distributions', label: 'Distribution Ledger', icon: PackageCheck },
-            ],
-          },
-          {
-            title: 'AI Intelligence & Audits',
-            items: [
-              { to: '/alerts', label: 'Anomaly Alerts & Risk', icon: AlertTriangle, highlight: true },
-              { to: '/audit', label: 'AI Shop Audit Agent', icon: FileCheck2 },
-              { to: '/ai-assistant', label: 'AI Policy Assistant & RAG', icon: BotMessageSquare },
-              { to: '/documents', label: 'Policy Knowledge Base', icon: BookOpen },
-              { to: '/audit-logs', label: 'Compliance Audit Trail', icon: History },
-            ],
-          },
-        ];
+        return [];
     }
   };
 
@@ -163,16 +220,16 @@ const Sidebar = () => {
   return (
     <aside className="w-64 bg-white border-r border-slate-200 min-h-[calc(100vh-4rem)] p-3 flex flex-col justify-between shrink-0 shadow-sm">
       <nav className="space-y-4">
-        {/* User Role Banner */}
-        <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
-          <div>
-            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Access Clearance</div>
-            <div className="text-xs font-black text-slate-900 flex items-center gap-1.5">
-              <ShieldCheck size={14} className="text-emerald-700" />
-              <span>{role} CONSOLE</span>
-            </div>
+        {/* Role Clearance Banner */}
+        <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider">
+              {profile.clearanceLevel}
+            </span>
+            <span className="text-sm">{profile.icon}</span>
           </div>
-          <span className="badge badge-success text-[9px]">{role}</span>
+          <div className="text-xs font-black text-slate-900 leading-tight">{profile.title}</div>
+          <div className="text-[11px] text-slate-600 font-semibold truncate mt-0.5">{profile.name}</div>
         </div>
 
         {/* Dynamic Role Sections */}
@@ -183,16 +240,17 @@ const Sidebar = () => {
             </div>
             {sec.items.map((item) => {
               const Icon = item.icon;
+              const isActive = location.pathname === item.to;
               return (
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  className={({ isActive }) =>
+                  className={
                     `flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${
                       isActive
                         ? 'bg-emerald-900 text-white shadow-sm'
                         : 'text-slate-600 hover:text-emerald-900 hover:bg-emerald-50/70'
-                    } ${item.highlight && !location.pathname.includes(item.to) ? 'text-amber-800 bg-amber-50/50' : ''}`
+                    } ${item.highlight && !isActive ? 'text-amber-800 bg-amber-50/50' : ''}`
                   }
                 >
                   <div className="flex items-center gap-2.5">
@@ -200,7 +258,9 @@ const Sidebar = () => {
                     <span>{item.label}</span>
                   </div>
                   {item.badge && (
-                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">
+                    <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                      isActive ? 'bg-emerald-800 text-emerald-100' : 'bg-emerald-100 text-emerald-800'
+                    }`}>
                       {item.badge}
                     </span>
                   )}
@@ -214,10 +274,10 @@ const Sidebar = () => {
       {/* Official Footnote */}
       <div className="p-3 bg-gradient-to-br from-emerald-50 to-green-100 rounded-xl border border-emerald-200 text-xs text-emerald-900 mt-4">
         <div className="font-bold flex items-center gap-1.5 mb-1">
-          <span>🇮🇳 NFSA Compliance</span>
+          <span>🇮🇳 NFSA Hierarchy Governance</span>
         </div>
         <p className="text-[10px] text-emerald-800 leading-relaxed font-medium">
-          Role-governed data isolation: Actions logged under statutory compliance rules.
+          State ➔ District ➔ Taluka ➔ Village ➔ FPS ➔ Citizen. Strict data boundary enforcement.
         </p>
       </div>
     </aside>

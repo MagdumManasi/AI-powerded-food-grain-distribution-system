@@ -19,6 +19,11 @@ import AiAudit from './pages/AiAudit';
 import AiAssistant from './pages/AiAssistant';
 import Documents from './pages/Documents';
 import AuditLogs from './pages/AuditLogs';
+import HierarchyExplorer from './pages/HierarchyExplorer';
+import BeneficiaryPortal from './pages/BeneficiaryPortal';
+import WarehouseConsole from './pages/WarehouseConsole';
+import TransporterConsole from './pages/TransporterConsole';
+import Complaints from './pages/Complaints';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -45,6 +50,11 @@ function App() {
           >
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="hierarchy" element={<HierarchyExplorer />} />
+            <Route path="citizen-portal" element={<BeneficiaryPortal />} />
+            <Route path="warehouse-ops" element={<WarehouseConsole />} />
+            <Route path="transporter-ops" element={<TransporterConsole />} />
+            <Route path="complaints" element={<Complaints />} />
             <Route path="beneficiaries" element={<Beneficiaries />} />
             <Route path="beneficiaries/:id" element={<BeneficiaryDetail />} />
             <Route path="ration-shops" element={<RationShops />} />
